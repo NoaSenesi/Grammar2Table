@@ -71,8 +71,12 @@ public class Grammar {
 		return terminals;
 	}
 
-	public char getAxiom() {
-		return getNonTerminals().charAt(0);
+	public String getAxiom() {
+		String s = String.valueOf(getNonTerminals().charAt(0));
+
+		if (getRules().keySet().contains(s + "'")) return s + "'";
+
+		return s;
 	}
 
 	public Map<String, String[]> getRules() {
@@ -94,20 +98,20 @@ public class Grammar {
 		return rules;
 	}
 
-	public String[] getRules(char nonTerminal) {
+	public String[] getRules(String nonTerminal) {
 		if (getNonTerminals().indexOf(nonTerminal) == -1) {
 			System.out.println("Warning: " + nonTerminal + " is not a non-terminal.");
 			return null;
 		}
 
-		return getRules().get(String.valueOf(nonTerminal));
+		return getRules().get(nonTerminal);
 	}
 
 	public void printRules() {
 		if (rules.containsKey(getAxiom() + "'")) System.out.println(getAxiom() + "' -> " + getAxiom());
-		
+
 		for (char c : getNonTerminals().toCharArray()) {
-			String[] rules = getRules(c);
+			String[] rules = getRules(String.valueOf(c));
 
 			for (String rule : rules) {
 				System.out.println(c + " -> " + rule);
@@ -115,34 +119,33 @@ public class Grammar {
 		}
 	}
 
-	public String firsts(char nonTerminal) {
+	public String firsts(String nonTerminal) {
 		String firsts = firsts(nonTerminal, "");
 		if (canBeEmpty(nonTerminal)) firsts += "$";
 
 		return firsts.replace("^", "");
 	}
 
-	private String firsts(char nonTerminal, String visited) {
+	private String firsts(String nonTerminal, String visited) {
 		if (visited.indexOf(nonTerminal) != -1) {
 			return "";
 		}
 
 		if (getNonTerminals().indexOf(nonTerminal) == -1) {
-			System.out.println("Warning: " + nonTerminal + " is not a non-terminal.");
-			return null;
+			return nonTerminal;
 		}
 
 		String firsts = "";
 
-		for (String rule : getRules(nonTerminal)) {
+		for (String rule : getRules(String.valueOf(nonTerminal))) {
 			char[] chars = rule.toCharArray();
 
 			int i = 0;
 
 			while (i < chars.length) {
 				if (getNonTerminals().indexOf(chars[i]) != -1) {
-					if (firsts.indexOf(chars[i]) == -1) firsts += firsts(chars[i], visited + nonTerminal);
-					if (!canBeEmpty(chars[i])) break;
+					if (firsts.indexOf(chars[i]) == -1) firsts += firsts(String.valueOf(chars[i]), visited + nonTerminal);
+					if (!canBeEmpty(String.valueOf(chars[i]))) break;
 				} else {
 					if (firsts.indexOf(chars[i]) == -1) firsts += chars[i];
 					break;
@@ -155,11 +158,11 @@ public class Grammar {
 		return firsts;
 	}
 
-	public boolean canBeEmpty(char nonTerminal) {
+	public boolean canBeEmpty(String nonTerminal) {
 		return canBeEmpty(nonTerminal, "");
 	}
 
-	private boolean canBeEmpty(char nonTerminal, String visited) {
+	private boolean canBeEmpty(String nonTerminal, String visited) {
 		if (visited.indexOf(nonTerminal) != -1) return false;
 
 		if (getNonTerminals().indexOf(nonTerminal) == -1) return false;
@@ -180,7 +183,7 @@ public class Grammar {
 			if (empty) {
 				for (int i = 0; i < chars.length; i++) {
 					if (getNonTerminals().indexOf(chars[i]) != -1) {
-						if (!canBeEmpty(chars[i], visited + nonTerminal)) {
+						if (!canBeEmpty(String.valueOf(chars[i]), visited + nonTerminal)) {
 							empty = false;
 							break;
 						}

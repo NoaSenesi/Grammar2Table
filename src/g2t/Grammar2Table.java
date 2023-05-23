@@ -10,6 +10,6 @@ public class Grammar2Table {
 		Grammar g = new Grammar(args[0]);
 		FSM fsm = new FSM(g);
 
-		fsm.getAugmentedGrammar().printRules();
+		fsm.getFirstState().print();
 	}
 }
