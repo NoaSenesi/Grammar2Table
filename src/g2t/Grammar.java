@@ -6,11 +6,13 @@ import java.util.Map;
 public class Grammar {
 	private static final String RESERVED = "=|;$";
 	private String[] lines;
-	private String terminals, nonTerminals;
-	private Map<Character, String[]> rules;
+	private String terminals, nonTerminals, file;
+	private Map<String, String[]> rules;
 
 
 	public Grammar(String file) {
+		this.file = file;
+
 		lines = Reader.getLines(file);
 		lines = Reader.cleanLines(lines);
 
@@ -73,7 +75,7 @@ public class Grammar {
 		return getNonTerminals().charAt(0);
 	}
 
-	public Map<Character, String[]> getRules() {
+	public Map<String, String[]> getRules() {
 		if (rules != null) return rules;
 
 		rules = new HashMap<>();
@@ -84,7 +86,7 @@ public class Grammar {
 
 				if (chars[0] == nonTerminal) {
 					String[] rule = line.split("=")[1].split(";")[0].split("\\|");
-					rules.put(nonTerminal, rule);
+					rules.put(String.valueOf(nonTerminal), rule);
 				}
 			}
 		}
@@ -98,10 +100,12 @@ public class Grammar {
 			return null;
 		}
 
-		return getRules().get(nonTerminal);
+		return getRules().get(String.valueOf(nonTerminal));
 	}
 
 	public void printRules() {
+		if (rules.containsKey(getAxiom() + "'")) System.out.println(getAxiom() + "' -> " + getAxiom());
+		
 		for (char c : getNonTerminals().toCharArray()) {
 			String[] rules = getRules(c);
 
@@ -188,5 +192,11 @@ public class Grammar {
 		}
 
 		return false;
+	}
+
+	public Grammar copy() {
+		Grammar g = new Grammar(file);
+
+		return g;
 	}
 }
