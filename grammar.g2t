@@ -1,0 +1,11 @@
+// n = non-terminal
+// t = terminal
+// e = equals
+// s = semi-colon
+// i = separator
+
+S = neEs;
+E = EiR | R;
+R = nR | tR | ^;
+
+# Test
