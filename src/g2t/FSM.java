@@ -20,9 +20,18 @@ public class FSM {
 	public State getFirstState() {
 		if (states.size() > 0) return states.get(0);
 
+		List<Rule> fromRules = new ArrayList<>();
+		fromRules.add(new Rule(augmentedGrammar.getAxiom(), augmentedGrammar.getAxiom().replace("'", ""), "$"));
+
+		State state = getOrCreateStateFromRules(fromRules);
+
+		return state;
+	}
+
+	public State getOrCreateStateFromRules(List<Rule> fromRules) {
 		List<Rule> rules = new ArrayList<>(), newRules = new ArrayList<>(), tempRules = new ArrayList<>();
 
-		tempRules.add(new Rule(augmentedGrammar.getAxiom(), augmentedGrammar.getAxiom().replace("'", ""), "$"));
+		tempRules.addAll(fromRules);
 
 		while (tempRules.size() > 0 || newRules.size() > 0) {
 			rules.addAll(newRules);
@@ -72,7 +81,12 @@ public class FSM {
 			}
 		}
 
-		State state = new State(0, rules);
+		State state = new State(states.size(), rules, this);
+
+		for (State s : states) {
+			if (s.equals(state)) return s;
+		}
+
 		states.add(state);
 
 		return state;
