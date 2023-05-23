@@ -9,8 +9,6 @@ public class Grammar2Table {
 
 		Grammar g = new Grammar(args[0]);
 
-		for (String line : g.getLines()) {
-			System.out.println(line);
-		}
+		g.printRules();
 	}
 }

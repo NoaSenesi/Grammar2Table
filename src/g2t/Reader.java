@@ -30,19 +30,26 @@ public class Reader {
 
 	public static String[] cleanLines(String[] lines) {
 		String[] cleanLines = new String[lines.length];
-		int n = 0;
 
 		for (int i = 0; i < lines.length; i++) {
 			String line = lines[i];
 			line = line.replaceAll("(//|#).*", "");
-			line.trim();
-
-			if (line.length() > 0) cleanLines[n++] = line;
+			line = line.trim();
+			line = line.replaceAll("(\s|\t|\r|\n)", "");
+			cleanLines[i] = line;
 		}
 
-		String[] result = new String[n];
-		for (int i = 0; i < n; i++) result[i] = cleanLines[i];
+		String data = String.join("", cleanLines);
+		cleanLines = data.split(";");
 
-		return result;
+		int n = 0;
+		for (int i = 0; i < cleanLines.length; i++) {
+			if (cleanLines[i].length() > 0) lines[n++] = cleanLines[i] + ";";
+		}
+
+		String[] res = new String[n];
+		for (int i = 0; i < n; i++) res[i] = lines[i];
+
+		return res;
 	}
 }
