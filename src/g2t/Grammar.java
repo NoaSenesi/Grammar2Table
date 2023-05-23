@@ -69,6 +69,10 @@ public class Grammar {
 		return terminals;
 	}
 
+	public char getAxiom() {
+		return getNonTerminals().charAt(0);
+	}
+
 	public Map<Character, String[]> getRules() {
 		if (rules != null) return rules;
 
@@ -105,5 +109,84 @@ public class Grammar {
 				System.out.println(c + " -> " + rule);
 			}
 		}
+	}
+
+	public String firsts(char nonTerminal) {
+		String firsts = firsts(nonTerminal, "");
+		if (canBeEmpty(nonTerminal)) firsts += "$";
+
+		return firsts.replace("^", "");
+	}
+
+	private String firsts(char nonTerminal, String visited) {
+		if (visited.indexOf(nonTerminal) != -1) {
+			return "";
+		}
+
+		if (getNonTerminals().indexOf(nonTerminal) == -1) {
+			System.out.println("Warning: " + nonTerminal + " is not a non-terminal.");
+			return null;
+		}
+
+		String firsts = "";
+
+		for (String rule : getRules(nonTerminal)) {
+			char[] chars = rule.toCharArray();
+
+			int i = 0;
+
+			while (i < chars.length) {
+				if (getNonTerminals().indexOf(chars[i]) != -1) {
+					if (firsts.indexOf(chars[i]) == -1) firsts += firsts(chars[i], visited + nonTerminal);
+					if (!canBeEmpty(chars[i])) break;
+				} else {
+					if (firsts.indexOf(chars[i]) == -1) firsts += chars[i];
+					break;
+				}
+
+				i++;
+			}
+		}
+
+		return firsts;
+	}
+
+	public boolean canBeEmpty(char nonTerminal) {
+		return canBeEmpty(nonTerminal, "");
+	}
+
+	private boolean canBeEmpty(char nonTerminal, String visited) {
+		if (visited.indexOf(nonTerminal) != -1) return false;
+
+		if (getNonTerminals().indexOf(nonTerminal) == -1) return false;
+
+		for (String line : getRules(nonTerminal)) {
+			if (line.equals("^")) return true;
+
+			char[] chars = line.toCharArray();
+			boolean empty = true;
+
+			for (int i = 0; i < chars.length; i++) {
+				if (getTerminals().indexOf(chars[i]) != -1) {
+					empty = false;
+					break;
+				}
+			}
+
+			if (empty) {
+				for (int i = 0; i < chars.length; i++) {
+					if (getNonTerminals().indexOf(chars[i]) != -1) {
+						if (!canBeEmpty(chars[i], visited + nonTerminal)) {
+							empty = false;
+							break;
+						}
+					}
+				}
+			}
+
+			if (empty) return true;
+		}
+
+		return false;
 	}
 }

@@ -9,6 +9,13 @@ public class Grammar2Table {
 
 		Grammar g = new Grammar(args[0]);
 
+		System.out.println(g.firsts('S'));
+		System.out.println();
+		System.out.println(g.firsts('E'));
+		System.out.println();
+		System.out.println(g.firsts('R'));
+		System.out.println();
+
 		g.printRules();
 	}
 }
