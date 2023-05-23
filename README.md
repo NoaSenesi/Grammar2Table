@@ -1,18 +1,22 @@
-## Getting Started
+# Grammar2Table
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+Java program that takes a grammar as an input and gives a table as an output.
 
-## Folder Structure
+## Documentation
 
-The workspace contains two folders by default, where:
+To run this program on a grammar file, you shall use the command `java g2t.Grammar2Table <file>`
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+Terminals and non-terminals are automatically determined. They can be any symbol apart from these: `; | = $`
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+Empty words (epsilon) are written as `^`
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+## Syntax
 
-## Dependency Management
+```
+// S, X and Y are automatically detected to be non-terminals
+# a, b, c, d, e and f are automatically detected to be terminals
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+S = aXb | c;
+X = dX | eY;
+Y = fX | ^;
+```
