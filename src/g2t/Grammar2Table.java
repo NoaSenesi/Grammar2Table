@@ -7,12 +7,9 @@ public class Grammar2Table {
 			System.exit(1);
 		}
 
-		String file = args[0];
+		Grammar g = new Grammar(args[0]);
 
-		String[] lines = Reader.getLines(file);
-		lines = Reader.cleanLines(lines);
-
-		for (String line : lines) {
+		for (String line : g.getLines()) {
 			System.out.println(line);
 		}
 	}
