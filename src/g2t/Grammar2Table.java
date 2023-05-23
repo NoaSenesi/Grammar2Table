@@ -9,11 +9,10 @@ public class Grammar2Table {
 
 		Grammar g = new Grammar(args[0]);
 		FSM fsm = new FSM(g);
+		fsm.createAllStates();
 
-		State f = fsm.getFirstState();
-
-		f.print();
-		f.shift('S').print();
-		f.shift('n').print();
+		for (State s : fsm.getStates()) {
+			s.print();
+		}
 	}
 }

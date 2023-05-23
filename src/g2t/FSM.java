@@ -17,6 +17,34 @@ public class FSM {
 		return augmentedGrammar;
 	}
 
+	public void createAllStates() {
+		State state = getFirstState();
+
+		for (int i = 0; i < states.size(); i++) {
+			if (i != 0) state = states.get(i);
+
+			for (char c : (augmentedGrammar.getTerminals() + augmentedGrammar.getNonTerminals()).toCharArray()) {
+				State newState = state.shift(c);
+
+				if (newState == null) continue;
+
+				if (!isStateCreated(newState)) states.add(newState);
+			}
+		}
+	}
+
+	public List<State> getStates() {
+		return states;
+	}
+
+	public boolean isStateCreated(State state) {
+		for (State s : states) {
+			if (s.equals(state)) return true;
+		}
+
+		return false;
+	}
+
 	public State getFirstState() {
 		if (states.size() > 0) return states.get(0);
 
@@ -47,7 +75,10 @@ public class FSM {
 				if (augmentedGrammar.getNonTerminals().indexOf(peek) == -1) continue;
 
 				for (String nr : augmentedGrammar.getRules(peek)) {
-					Rule nrule = new Rule(peek, nr, augmentedGrammar.firsts(rule.peek(1)));
+					String cond = augmentedGrammar.firsts(rule.peek(1));
+					if (cond.equals("$")) cond = rule.getCondition();
+					
+					Rule nrule = new Rule(peek, nr, cond);
 
 					boolean found = false;
 

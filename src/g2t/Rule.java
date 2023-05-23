@@ -47,7 +47,7 @@ public class Rule {
 	public String toString() {
 		String r = right.equals("^") ? right : right.substring(0, cursor) + "." + right.substring(cursor, right.length());
 
-		return left + " -> " + r + " [" + String.join(";", condition.split("")) + "]";
+		return left + " -> " + r + " [" + String.join("|", condition.split("")) + "]";
 	}
 
 	public Rule copy() {
