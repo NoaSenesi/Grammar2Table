@@ -9,6 +9,11 @@ public class Grammar2Table {
 
 		String file = args[0];
 
-		System.out.println(file);
+		String[] lines = Reader.getLines(file);
+		lines = Reader.cleanLines(lines);
+
+		for (String line : lines) {
+			System.out.println(line);
+		}
 	}
 }
