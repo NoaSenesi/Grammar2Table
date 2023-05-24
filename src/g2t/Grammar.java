@@ -158,6 +158,34 @@ public class Grammar {
 		return firsts;
 	}
 
+	public String firstsRule(String rule) {
+		String firsts = "";
+
+		char[] chars = rule.toCharArray();
+
+		int i = 0;
+
+		while (i < chars.length) {
+			firsts = firsts.replace("$", "");
+
+			if (getNonTerminals().indexOf(chars[i]) != -1) {
+				if (firsts.indexOf(chars[i]) == -1) firsts += firsts(String.valueOf(chars[i]));
+				if (!canBeEmpty(String.valueOf(chars[i]))) break;
+			} else {
+				if (firsts.indexOf(chars[i]) == -1) firsts += chars[i];
+				break;
+			}
+
+			i++;
+		}
+
+		String unique = "";
+
+		for (char c : firsts.toCharArray()) if (unique.indexOf(c) == -1) unique += c;
+
+		return unique;
+	}
+
 	public boolean canBeEmpty(String nonTerminal) {
 		return canBeEmpty(nonTerminal, "");
 	}

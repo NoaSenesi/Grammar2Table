@@ -49,7 +49,7 @@ public class FSM {
 		if (states.size() > 0) return states.get(0);
 
 		List<Rule> fromRules = new ArrayList<>();
-		fromRules.add(new Rule(augmentedGrammar.getAxiom(), augmentedGrammar.getAxiom().replace("'", ""), "$"));
+		fromRules.add(new Rule(augmentedGrammar.getAxiom(), augmentedGrammar.getAxiom().replace("'", ""), "$", "$"));
 
 		State state = getOrCreateStateFromRules(fromRules);
 
@@ -75,15 +75,15 @@ public class FSM {
 				if (augmentedGrammar.getNonTerminals().indexOf(peek) == -1) continue;
 
 				for (String nr : augmentedGrammar.getRules(peek)) {
-					String cond = augmentedGrammar.firsts(rule.peek(1));
-					if (cond.equals("$")) cond = rule.getCondition();
-					
-					Rule nrule = new Rule(peek, nr, cond);
+					String parent = rule.getRight().substring(rule.getCursor() + 1, rule.getRight().length()) + rule.getParentContextRule();
+					String cond = augmentedGrammar.firstsRule(parent);
+
+					Rule nrule = new Rule(peek, nr, cond, parent);
 
 					boolean found = false;
 
 					for (Rule r : rules) {
-						if (r.contextEquals(nrule)) {
+						if (r.coreEquals(nrule)) {
 							found = true;
 							break;
 						}
@@ -92,7 +92,7 @@ public class FSM {
 					if (found) continue;
 
 					for (Rule r : newRules) {
-						if (r.contextEquals(nrule)) {
+						if (r.coreEquals(nrule)) {
 							found = true;
 							break;
 						}
@@ -101,9 +101,9 @@ public class FSM {
 					if (found) continue;
 
 					for (Rule r : tempRules) {
-						if (r.contextEquals(nrule)) {
+						if (r.coreEquals(nrule)) {
 							found = true;
-							r.addCondition(nrule.getCondition());
+							r.addContext(nrule.getContext());
 						}
 					}
 

@@ -88,14 +88,14 @@ public class State {
 		return true;
 	}
 
-	public boolean contextEquals(State state) {
+	public boolean coreEquals(State state) {
 		if (rules.size() != state.rules.size()) return false;
 
 		for (Rule rule : rules) {
 			boolean none = true;
 
 			for (Rule srule : state.getRules()) {
-				if (rule.contextEquals(srule)) none = false;
+				if (rule.coreEquals(srule)) none = false;
 			}
 
 			if (none) return false;
