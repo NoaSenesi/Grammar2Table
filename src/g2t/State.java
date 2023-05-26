@@ -1,17 +1,21 @@
 package g2t;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class State {
 	private int id;
 	private List<Rule> rules;
 	private FSM parent;
+	private Map<Character, Integer> shifts;
 
 	public State(int id, List<Rule> rules, FSM parent) {
 		this.id = id;
 		this.rules = rules;
 		this.parent = parent;
+		shifts = new HashMap<>();
 	}
 
 	public int getId() {
@@ -57,8 +61,10 @@ public class State {
 	}
 
 	public State shift(char c) {
+		if (shifts.containsKey(c)) return parent.getStates().get(shifts.get(c));
+
 		if (c == '$') return null;
-		
+
 		List<Rule> newRules = new ArrayList<>();
 
 		for (Rule rule : rules) {
@@ -72,6 +78,8 @@ public class State {
 		if (newRules.size() == 0) return null;
 
 		State state = parent.getOrCreateStateFromRules(newRules);
+
+		shifts.put(c, state.getId());
 
 		return state;
 	}
@@ -106,5 +114,25 @@ public class State {
 		}
 
 		return true;
+	}
+
+	public void factorize() {
+		List<Rule> factorized = new ArrayList<>();
+
+		for (Rule rule : rules) {
+			boolean in = false;
+
+			for (Rule frule : factorized) {
+				if (rule.coreEquals(frule)) {
+					frule.addContext(rule.getContext());
+					in = true;
+					break;
+				}
+			}
+
+			if (!in) factorized.add(rule.copy());
+		}
+
+		rules = factorized;
 	}
 }

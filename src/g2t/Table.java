@@ -39,7 +39,6 @@ public class Table {
 					if (c == '$' && s.getRules().size() == 1 && s.getRules().get(0).getLeft().equals(fsm.getAugmentedGrammar().getAxiom())) {
 						table[i][j] = new Action(ActionType.ACCEPT);
 					} else {
-						//table[i][j] = new Action(ActionType.ERROR);
 						for (Rule r : s.getRules()) {
 							if (r.getContext().indexOf(c) != -1 && r.canReduce()) {
 								table[i][j] = new Action(ActionType.REDUCE, r);
@@ -81,14 +80,14 @@ public class Table {
 		for (int i = 0; i < width.length; i++) {
 			for (int j = 0; j < width[i] + 2; j++) System.out.print("─");
 			if (i != width.length - 1) System.out.print("┬");
-			if (i == terminals.length()) System.out.print("┬");
+			if (i == terminals.length() || i == 0) System.out.print("┬");
 		}
 		System.out.println("┐");
 
 		System.out.print("│ State ");
 		for (int i = 0; i < width[0] - 5; i++) System.out.print(" ");
 
-		System.out.print("│");
+		System.out.print("││");
 		for (int i = 0; i < terminals.length(); i++) {
 			System.out.print(" " + terminals.charAt(i) + " ");
 			for (int j = 0; j < width[i+1] - 1; j++) System.out.print(" ");
@@ -106,7 +105,7 @@ public class Table {
 		for (int i = 0; i < width.length; i++) {
 			for (int j = 0; j < width[i] + 2; j++) System.out.print("─");
 			if (i != width.length - 1) System.out.print("┼");
-			if (i == terminals.length()) System.out.print("┼");
+			if (i == terminals.length() || i == 0) System.out.print("┼");
 		}
 		System.out.println("┤");
 
@@ -115,7 +114,7 @@ public class Table {
 			System.out.print("│ " + in + " ");
 			for (int j = 0; j < width[0] - in.length(); j++) System.out.print(" ");
 
-			System.out.print("│");
+			System.out.print("││");
 			for (int j = 0; j < getTable()[i].length; j++) {
 				System.out.print(" " + getTable()[i][j] + " ");
 				for (int k = 0; k < width[j+1] - getTable()[i][j].toString().length(); k++) System.out.print(" ");
@@ -129,7 +128,7 @@ public class Table {
 		for (int i = 0; i < width.length; i++) {
 			for (int j = 0; j < width[i] + 2; j++) System.out.print("─");
 			if (i != width.length - 1) System.out.print("┴");
-			if (i == terminals.length()) System.out.print("┴");
+			if (i == terminals.length() || i == 0) System.out.print("┴");
 		}
 		System.out.println("┘");
 	}
@@ -160,14 +159,14 @@ public class Table {
 			for (int i = 0; i < width.length; i++) {
 				for (int j = 0; j < width[i] + 2; j++) writer.write("─");
 				if (i != width.length - 1) writer.write("┬");
-				if (i == terminals.length()) writer.write("┬");
+				if (i == terminals.length() || i == 0) writer.write("┬");
 			}
 			writer.write("┐\n");
 
 			writer.write("│ State ");
 			for (int i = 0; i < width[0] - 5; i++) writer.write(" ");
 
-			writer.write("│");
+			writer.write("││");
 			for (int i = 0; i < terminals.length(); i++) {
 				writer.write(" " + terminals.charAt(i) + " ");
 				for (int j = 0; j < width[i+1] - 1; j++) writer.write(" ");
@@ -185,7 +184,7 @@ public class Table {
 			for (int i = 0; i < width.length; i++) {
 				for (int j = 0; j < width[i] + 2; j++) writer.write("─");
 				if (i != width.length - 1) writer.write("┼");
-				if (i == terminals.length()) writer.write("┼");
+				if (i == terminals.length() || i == 0) writer.write("┼");
 			}
 			writer.write("┤\n");
 
@@ -194,7 +193,7 @@ public class Table {
 				writer.write("│ " + in + " ");
 				for (int j = 0; j < width[0] - in.length(); j++) writer.write(" ");
 
-				writer.write("│");
+				writer.write("││");
 				for (int j = 0; j < getTable()[i].length; j++) {
 					writer.write(" " + getTable()[i][j] + " ");
 					for (int k = 0; k < width[j+1] - getTable()[i][j].toString().length(); k++) writer.write(" ");
@@ -208,7 +207,7 @@ public class Table {
 			for (int i = 0; i < width.length; i++) {
 				for (int j = 0; j < width[i] + 2; j++) writer.write("─");
 				if (i != width.length - 1) writer.write("┴");
-				if (i == terminals.length()) writer.write("┴");
+				if (i == terminals.length() || i == 0) writer.write("┴");
 			}
 			writer.write("┘\n");
 

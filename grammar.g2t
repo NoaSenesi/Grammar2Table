@@ -8,4 +8,4 @@ S = neEs;
 E = EiR | R;
 R = nR | tR | ^;
 
-# Test
+# Test grammar

@@ -36,6 +36,8 @@ public class FSM {
 				if (!isStateCreated(newState)) states.add(newState);
 			}
 		}
+
+		for (State s : states) s.factorize();
 	}
 
 	public List<State> getStates() {
@@ -62,33 +64,27 @@ public class FSM {
 	}
 
 	public State getOrCreateStateFromRules(List<Rule> fromRules) {
-		List<Rule> rules = new ArrayList<>(), newRules = new ArrayList<>(), tempRules = new ArrayList<>();
+		List<Rule> rules = new ArrayList<>();
+		rules.addAll(fromRules);
 
-		tempRules.addAll(fromRules);
+		for (int i = 0; i < rules.size(); i++) {
+			Rule rule = rules.get(i);
+			String peek = rule.peek();
+			if (peek == null) continue;
 
-		while (tempRules.size() > 0 || newRules.size() > 0) {
-			rules.addAll(newRules);
-			newRules.clear();
-			newRules.addAll(tempRules);
-			tempRules.clear();
+			if (augmentedGrammar.getNonTerminals().indexOf(peek) == -1) continue;
 
+			for (String nr : augmentedGrammar.getRules(peek)) {
+				String parent = rule.getRight().substring(rule.getCursor() + 1, rule.getRight().length()) + rule.getParentContextRule();
+				String context = augmentedGrammar.firstsRule(parent);
 
-			for (Rule rule : newRules) {
-				String peek = rule.peek();
-				if (peek == null) continue;
-
-				if (augmentedGrammar.getNonTerminals().indexOf(peek) == -1) continue;
-
-				for (String nr : augmentedGrammar.getRules(peek)) {
-					String parent = rule.getRight().substring(rule.getCursor() + 1, rule.getRight().length()) + rule.getParentContextRule();
-					String cond = augmentedGrammar.firstsRule(parent);
-
-					Rule nrule = new Rule(peek, nr, cond, parent);
+				for (char c : context.toCharArray()) {
+					Rule nrule = new Rule(peek, nr, String.valueOf(c), parent);
 
 					boolean found = false;
 
 					for (Rule r : rules) {
-						if (r.coreEquals(nrule)) {
+						if (r.equals(nrule)) {
 							found = true;
 							break;
 						}
@@ -96,28 +92,10 @@ public class FSM {
 
 					if (found) continue;
 
-					for (Rule r : newRules) {
-						if (r.coreEquals(nrule)) {
-							found = true;
-							break;
-						}
-					}
-
-					if (found) continue;
-
-					for (Rule r : tempRules) {
-						if (r.coreEquals(nrule)) {
-							found = true;
-							r.addContext(nrule.getContext());
-						}
-					}
-
-					if (!found) tempRules.add(nrule);
+					rules.add(nrule);
 				}
 			}
 		}
-
-		if (rules.size() == 1 && rules.get(0).getRight().equals("^")) return null;
 
 		State state = new State(states.size(), rules, this);
 
