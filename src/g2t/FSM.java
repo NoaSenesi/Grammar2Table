@@ -4,13 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FSM {
-	private Grammar augmentedGrammar;
+	private Grammar grammar, augmentedGrammar;
 	private List<State> states;
 
 	public FSM(Grammar g) {
+		grammar = g;
 		augmentedGrammar = g.copy();
 		augmentedGrammar.getRules().put(augmentedGrammar.getAxiom() + "'", new String[] {String.valueOf(augmentedGrammar.getAxiom())});
 		states = new ArrayList<>();
+	}
+
+	public Grammar getGrammar() {
+		return grammar;
 	}
 
 	public Grammar getAugmentedGrammar() {
@@ -111,6 +116,8 @@ public class FSM {
 				}
 			}
 		}
+
+		if (rules.size() == 1 && rules.get(0).getRight().equals("^")) return null;
 
 		State state = new State(states.size(), rules, this);
 

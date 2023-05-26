@@ -10,9 +10,9 @@ public class Grammar2Table {
 		Grammar g = new Grammar(args[0]);
 		FSM fsm = new FSM(g);
 		fsm.createAllStates();
+		Table table = new Table(fsm);
 
-		for (State s : fsm.getStates()) {
-			s.print();
-		}
+		table.saveCSV(args[0] + ".csv");
+		table.save(args[0] + ".txt");
 	}
 }

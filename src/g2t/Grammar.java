@@ -66,7 +66,13 @@ public class Grammar {
 			}
 		}
 
-		terminals = tstring;
+		String unique = "";
+
+		for (int i = 0; i < tstring.length(); i++) {
+			if (unique.indexOf(tstring.charAt(i)) == -1) unique += tstring.charAt(i);
+		}
+
+		terminals = unique;
 
 		return terminals;
 	}

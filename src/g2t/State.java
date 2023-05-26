@@ -14,6 +14,10 @@ public class State {
 		this.parent = parent;
 	}
 
+	public int getId() {
+		return id;
+	}
+
 	public void print() {
 		int maxlen = 0;
 
@@ -25,29 +29,27 @@ public class State {
 
 		if (s.length() > maxlen) maxlen = s.length();
 
-		System.out.print("|");
-		for (int i = 0; i < maxlen+2; i++) System.out.print("-");
-		System.out.println("|");
+		System.out.print("┌");
+		for (int i = 0; i < maxlen+2; i++) System.out.print("─");
+		System.out.println("┐");
 
-		System.out.print("| " + s);
+		System.out.print("│ " + s);
 		for (int i = 0; i < maxlen - s.length(); i++) System.out.print(" ");
-		System.out.println(" |");
+		System.out.println(" │");
 
-		System.out.print("|");
-		for (int i = 0; i < maxlen+2; i++) System.out.print("-");
-		System.out.println("|");
+		System.out.print("├");
+		for (int i = 0; i < maxlen+2; i++) System.out.print("─");
+		System.out.println("┤");
 
 		for (Rule r : rules) {
-			System.out.print("| " + r);
+			System.out.print("│ " + r);
 			for (int i = 0; i < maxlen - r.toString().length(); i++) System.out.print(" ");
-			System.out.println(" |");
+			System.out.println(" │");
 		}
 
-		System.out.print("|");
-		for (int i = 0; i < maxlen+2; i++) System.out.print("-");
-		System.out.println("|");
-
-		System.out.println();
+		System.out.print("└");
+		for (int i = 0; i < maxlen+2; i++) System.out.print("─");
+		System.out.println("┘");
 	}
 
 	public List<Rule> getRules() {
@@ -55,6 +57,8 @@ public class State {
 	}
 
 	public State shift(char c) {
+		if (c == '$') return null;
+		
 		List<Rule> newRules = new ArrayList<>();
 
 		for (Rule rule : rules) {

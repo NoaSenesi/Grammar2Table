@@ -55,6 +55,14 @@ public class Rule {
 		return left + " -> " + r + " [" + String.join("|", context.split("")) + "]";
 	}
 
+	public String toStringFree() {
+		return left + " -> " + right;
+	}
+
+	public boolean canReduce() {
+		return cursor >= right.length() || right.equals("^");
+	}
+
 	public Rule copy() {
 		Rule rule = new Rule(left, right, context, parentRule);
 		rule.cursor = cursor;
