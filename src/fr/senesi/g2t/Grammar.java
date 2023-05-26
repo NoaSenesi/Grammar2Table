@@ -1,4 +1,4 @@
-package g2t;
+package fr.senesi.g2t;
 
 import java.util.HashMap;
 import java.util.Map;

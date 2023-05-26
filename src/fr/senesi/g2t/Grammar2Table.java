@@ -1,4 +1,4 @@
-package g2t;
+package fr.senesi.g2t;
 
 public class Grammar2Table {
 	public static final String VERSION = "1.0.0";

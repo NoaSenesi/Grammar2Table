@@ -1,4 +1,4 @@
-package g2t;
+package fr.senesi.g2t;
 
 public class Rule {
 	private String left, right, context, parentRule;

@@ -1,4 +1,4 @@
-package g2t;
+package fr.senesi.g2t;
 
 import java.io.File;
 import java.util.Scanner;
