@@ -4,6 +4,8 @@ Java program that takes a grammar as an input and gives a table as an output.
 
 ## Documentation
 
+You will need Java to be installed in order to use the program.
+
 To run this program on a grammar file, you first need to compile it with `build` for Windows or `sh build.sh` for Linux.
 
 Then you can use the command `g2t <file>` for Windows or `sh g2t.sh <file>` for Linux.
