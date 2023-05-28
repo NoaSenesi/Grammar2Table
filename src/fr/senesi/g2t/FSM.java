@@ -1,9 +1,7 @@
 package fr.senesi.g2t;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class FSM {
+	/*
 	private Grammar grammar, augmentedGrammar;
 	private List<State> states;
 
@@ -107,4 +105,5 @@ public class FSM {
 
 		return state;
 	}
+	*/
 }

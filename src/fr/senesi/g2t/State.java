@@ -1,11 +1,7 @@
 package fr.senesi.g2t;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class State {
+	/*
 	private int id;
 	private List<Rule> rules;
 	private FSM parent;
@@ -135,4 +131,5 @@ public class State {
 
 		rules = factorized;
 	}
+	*/
 }

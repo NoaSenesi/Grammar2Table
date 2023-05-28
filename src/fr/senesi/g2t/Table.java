@@ -1,12 +1,7 @@
 package fr.senesi.g2t;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
-import fr.senesi.g2t.Action.ActionType;
-
 public class Table {
+	/*
 	private FSM fsm;
 	private String terminals, nonTerminals;
 	private Action[][] table;
@@ -242,4 +237,5 @@ public class Table {
 			e.printStackTrace();
 		}
 	}
+	*/
 }

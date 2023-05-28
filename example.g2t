@@ -1,11 +1,9 @@
-// n = non-terminal
-// t = terminal
-// e = equals
-// s = semi-colon
-// i = separator
+// Example comment
+# Example comment 2
+/*
+Example comment 3
+*/
 
-S = neEs;
-E = EiR | R;
-R = nR | tR | ^;
-
-# Test grammar
+S = nonTerminal "=" E ";";
+E = E "|" R | R;
+R = nonTerminal R | terminal R | ^;

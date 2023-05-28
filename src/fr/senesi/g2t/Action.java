@@ -1,6 +1,7 @@
 package fr.senesi.g2t;
 
 public class Action {
+	/*
 	private ActionType type;
 	private Rule toRule;
 	private int toState;
@@ -46,4 +47,5 @@ public class Action {
 		ACCEPT,
 		ERROR
 	}
+	*/
 }

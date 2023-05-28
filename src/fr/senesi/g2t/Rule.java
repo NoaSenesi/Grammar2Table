@@ -1,6 +1,7 @@
 package fr.senesi.g2t;
 
 public class Rule {
+	/*
 	private String left, right, context, parentRule;
 	private int cursor;
 
@@ -83,4 +84,5 @@ public class Rule {
 	public boolean equals(Rule rule) {
 		return coreEquals(rule) && context.equals(rule.context);
 	}
+	*/
 }
