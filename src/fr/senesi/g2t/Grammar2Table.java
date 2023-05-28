@@ -39,8 +39,9 @@ public class Grammar2Table {
 		if (grammar == null) System.exit(1);
 
 		FiniteStateMachine fsm = new FiniteStateMachine(grammar);
+		fsm.createAllStates();
 
-		fsm.getInitialState().print();
+		for (fr.senesi.g2t.fsm.State s : fsm.getStates()) s.print();
 
 		//Grammar g = new Grammar(args[0]);
 

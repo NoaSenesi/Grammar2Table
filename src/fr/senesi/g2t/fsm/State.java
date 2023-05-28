@@ -1,5 +1,6 @@
 package fr.senesi.g2t.fsm;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,11 +39,50 @@ public class State {
 		if (factorized) return;
 		factorized = true;
 
-		// TODO Factorization
+		List<Rule> newRules = new ArrayList<>();
+
+		for (Rule r : rules) {
+			boolean found = false;
+
+			for (Rule nr : newRules) {
+				if (r.coreEquals(nr)) {
+					nr.addContext(r.getContext());
+					found = true;
+					break;
+				}
+			}
+
+			if (!found) newRules.add(r.copy());
+		}
+
+		rules = newRules;
 	}
 
 	public boolean isFactorized() {
 		return factorized;
+	}
+
+	public State shift(String token) {
+		if (transitions.containsKey(token)) return transitions.get(token);
+
+		List<Rule> rules = new ArrayList<>();
+
+		for (Rule r : this.rules) {
+			if (r.isFinished()) continue;
+
+			if (r.peek().equals(token)) {
+				Rule newRule = r.copy();
+				newRule.shift();
+				rules.add(newRule);
+			}
+		}
+
+		if (rules.isEmpty()) return null;
+
+		State state = fsm.createOrGetStateFromRules(rules);
+		transitions.put(token, state);
+
+		return state;
 	}
 
 	public boolean equals(Object o) {

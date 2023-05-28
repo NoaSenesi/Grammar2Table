@@ -10,10 +10,10 @@ public class Rule {
 
 	public Rule(String left, List<String> right, List<String> context, List<String> parent) {
 		this.left = left;
-		this.right = right;
+		this.right = right.size() == 1 && right.get(0).equals("^") ? new ArrayList<>() : right;
 		this.context = context;
 		this.parent = parent;
-		
+
 		cursor = 0;
 	}
 
@@ -67,8 +67,15 @@ public class Rule {
 		return right.get(cursor + offset);
 	}
 
+	public void addContext(List<String> context) {
+		for (String c : context) {
+			if (!this.context.contains(c)) this.context.add(c);
+		}
+	}
+
 	public String toString() {
 		String res = left + " ->";
+		if (right.size() == 0) res += " ";
 
 		for (int i = 0; i < right.size(); i++) {
 			res += " " + (cursor == i ? "." : "") + right.get(i);
@@ -94,10 +101,13 @@ public class Rule {
 
 		Rule r = (Rule) o;
 
-		return left.equals(r.left) && right.equals(r.right) && context.equals(r.context);
+		return left.equals(r.left) && right.equals(r.right) && cursor == r.cursor;
 	}
 
 	public Rule copy() {
-		return new Rule(left, right, context);
+		Rule rule = new Rule(left, right, context, parent);
+		rule.cursor = cursor;
+
+		return rule;
 	}
 }
