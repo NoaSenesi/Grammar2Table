@@ -53,6 +53,7 @@ public class Grammar {
 			List<Token> current = new ArrayList<>();
 
 			int cursor = i + 2;
+			boolean epsilon = false;
 
 			for (int j = cursor; j < tokenizer.getTokens().size(); j++) {
 				Token t = tokenizer.getTokens().get(j);
@@ -83,8 +84,15 @@ public class Grammar {
 				}
 
 				if (t instanceof Ruleable) {
+					if (epsilon) throw new SyntaxException("Unexpected " + t.getClass().getSimpleName() + " token at line " + t.getLine());
+
 					if (!terminals.contains(t.getValue()) && t instanceof Value) terminals.add(t.getValue());
 					current.add(t);
+
+					if (t instanceof Epsilon) {
+						if (current.size() > 1) throw new SyntaxException("Unexpected " + t.getClass().getSimpleName() + " token at line " + t.getLine());
+						epsilon = true;
+					}
 				}
 
 				else throw new SyntaxException("Unexpected " + t.getClass().getSimpleName() + " token at line " + t.getLine());
