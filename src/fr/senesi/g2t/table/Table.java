@@ -1,4 +1,4 @@
-package fr.senesi.g2t;
+package fr.senesi.g2t.table;
 
 public class Table {
 	/*

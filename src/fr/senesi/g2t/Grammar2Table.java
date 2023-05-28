@@ -4,6 +4,7 @@ import fr.senesi.g2t.exception.SyntaxException;
 import fr.senesi.g2t.exception.TokenizationException;
 import fr.senesi.g2t.fsm.FiniteStateMachine;
 import fr.senesi.g2t.grammar.Grammar;
+import fr.senesi.g2t.reader.Reader;
 import fr.senesi.g2t.tokenizer.Tokenizer;
 
 public class Grammar2Table {
