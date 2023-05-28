@@ -2,6 +2,7 @@ package fr.senesi.g2t;
 
 import fr.senesi.g2t.exception.SyntaxException;
 import fr.senesi.g2t.exception.TokenizationException;
+import fr.senesi.g2t.fsm.FiniteStateMachine;
 import fr.senesi.g2t.grammar.Grammar;
 import fr.senesi.g2t.tokenizer.Tokenizer;
 
@@ -37,8 +38,9 @@ public class Grammar2Table {
 
 		if (grammar == null) System.exit(1);
 
-		grammar.augment();
-		grammar.print();
+		FiniteStateMachine fsm = new FiniteStateMachine(grammar);
+
+		fsm.getInitialState().print();
 
 		//Grammar g = new Grammar(args[0]);
 

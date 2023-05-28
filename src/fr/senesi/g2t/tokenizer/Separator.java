@@ -1,6 +1,6 @@
 package fr.senesi.g2t.tokenizer;
 
-public class Separator extends Token {
+public final class Separator extends Token {
 	public Separator(int line) {
 		super(line);
 	}

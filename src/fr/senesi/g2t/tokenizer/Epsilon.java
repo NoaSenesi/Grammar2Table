@@ -1,6 +1,6 @@
 package fr.senesi.g2t.tokenizer;
 
-public class Epsilon extends Ruleable {
+public final class Epsilon extends Ruleable {
 	public Epsilon(int line) {
 		super(line);
 	}

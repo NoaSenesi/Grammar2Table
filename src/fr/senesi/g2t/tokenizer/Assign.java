@@ -1,6 +1,6 @@
 package fr.senesi.g2t.tokenizer;
 
-public class Assign extends Token {
+public final class Assign extends Token {
 	public Assign(int line) {
 		super(line);
 	}

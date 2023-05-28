@@ -1,6 +1,6 @@
 package fr.senesi.g2t.tokenizer;
 
-public class EOF extends Token {
+public final class EOF extends Token {
 	public EOF(int line) {
 		super(line);
 	}

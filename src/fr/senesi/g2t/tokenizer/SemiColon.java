@@ -1,6 +1,6 @@
 package fr.senesi.g2t.tokenizer;
 
-public class SemiColon extends Token {
+public final class SemiColon extends Token {
 	public SemiColon(int line) {
 		super(line);
 	}

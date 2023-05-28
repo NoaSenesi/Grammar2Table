@@ -171,13 +171,17 @@ public class Grammar {
 	}
 
 	public List<String> firstsRule(List<String> values) {
+		return firstsRule(values, false);
+	}
+
+	public List<String> firstsRule(List<String> values, boolean eof) {
 		List<String> firsts = new ArrayList<>();
 
 		for (String value : values) {
 			if (canBeEmpty(value)) {
-				firsts.addAll(firsts(value));
+				firsts.addAll(firsts(value, eof));
 			} else {
-				firsts.addAll(firsts(value));
+				firsts.addAll(firsts(value, eof));
 				break;
 			}
 		}
@@ -190,10 +194,14 @@ public class Grammar {
 	}
 
 	public List<String> firsts(String value) {
-		return firsts(value, new ArrayList<>());
+		return firsts(value, new ArrayList<>(), false);
 	}
 
-	private List<String> firsts(String value, List<String> visited) {
+	public List<String> firsts(String value, boolean eof) {
+		return firsts(value, new ArrayList<>(), eof);
+	}
+
+	private List<String> firsts(String value, List<String> visited, boolean eof) {
 		if (visited.contains(value)) return new ArrayList<>();
 
 		List<String> firsts = new ArrayList<>();
@@ -212,7 +220,7 @@ public class Grammar {
 						List<String> visited2 = new ArrayList<>(visited);
 						visited2.add(value);
 
-						List<String> firsts2 = firsts(token.getValue(), visited2);
+						List<String> firsts2 = firsts(token.getValue(), visited2, eof);
 
 						for (String first : firsts2) {
 							if (firsts.indexOf(first) == -1) firsts.add(first);
@@ -224,7 +232,11 @@ public class Grammar {
 			}
 		}
 
-		if (firsts.contains("^")) firsts.remove("^");
+		if (firsts.contains("^")) {
+			firsts.remove("^");
+
+			if (eof) firsts.add("$");
+		}
 
 		return firsts;
 	}

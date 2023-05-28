@@ -1,6 +1,6 @@
 package fr.senesi.g2t.tokenizer;
 
-public class Identifier extends Value {
+public final class Identifier extends Value {
 	private String value;
 
 	public Identifier(int line, String value) {
