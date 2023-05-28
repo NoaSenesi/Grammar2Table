@@ -37,8 +37,7 @@ public class Grammar2Table {
 
 		if (grammar == null) System.exit(1);
 
-		System.out.println(grammar.getTerminals());
-		System.out.println(grammar.getNonTerminals());
+		grammar.augment();
 		grammar.print();
 
 		//Grammar g = new Grammar(args[0]);

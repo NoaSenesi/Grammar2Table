@@ -8,6 +8,7 @@ import java.util.Map;
 import fr.senesi.g2t.exception.SyntaxException;
 import fr.senesi.g2t.tokenizer.Assign;
 import fr.senesi.g2t.tokenizer.EOF;
+import fr.senesi.g2t.tokenizer.Epsilon;
 import fr.senesi.g2t.tokenizer.Identifier;
 import fr.senesi.g2t.tokenizer.Ruleable;
 import fr.senesi.g2t.tokenizer.SemiColon;
@@ -17,13 +18,10 @@ import fr.senesi.g2t.tokenizer.Tokenizer;
 import fr.senesi.g2t.tokenizer.Value;
 
 public class Grammar {
-	/*private static final String RESERVED = "=|;$";
-	private String[] lines;
-	private String terminals, nonTerminals, file;
-	private Map<String, String[]> rules;*/
 	private Map<String, List<List<Token>>> rules;
 	private Tokenizer tokenizer;
 	private List<String> terminals, nonTerminals;
+	private boolean augmented = false;
 
 	public Grammar(Tokenizer tokenizer) throws SyntaxException {
 		this.tokenizer = tokenizer;
@@ -101,6 +99,36 @@ public class Grammar {
 		}
 	}
 
+	public void augment() {
+		if (augmented) return;
+
+		augmented = true;
+
+		String axiom = nonTerminals.get(0);
+		List<List<Token>> rules = new ArrayList<>();
+		List<Token> rule = new ArrayList<>();
+
+		rule.add(new Identifier(0, axiom));
+
+		rules.add(rule);
+
+		Map<String, List<List<Token>>> newRules = new LinkedHashMap<>();
+		newRules.put(axiom + "'", rules);
+		newRules.putAll(this.rules);
+
+		this.rules = newRules;
+
+		List<String> newNonTerminals = new ArrayList<>();
+		newNonTerminals.add(axiom + "'");
+		newNonTerminals.addAll(nonTerminals);
+
+		nonTerminals = newNonTerminals;
+	}
+
+	public boolean isAugmented() {
+		return augmented;
+	}
+
 	public Map<String, List<List<Token>>> getRules() {
 		return rules;
 	}
@@ -111,6 +139,10 @@ public class Grammar {
 
 	public List<String> getNonTerminals() {
 		return nonTerminals;
+	}
+
+	public String getAxiom() {
+		return nonTerminals.get(0);
 	}
 
 	public void print() {
@@ -130,218 +162,87 @@ public class Grammar {
 		}
 	}
 
-	/*public Grammar(String file) {
-		this.file = file;
+	public List<String> firstsRule(List<String> values) {
+		List<String> firsts = new ArrayList<>();
 
-		lines = Reader.getLines(file);
-		lines = Reader.cleanLines(lines);
-
-		for (String line : lines) {
-			if (!line.matches("^[^=;\\|]=[^=;\\|]+(\\|[^=;\\|]+)*;$")) {
-				System.out.println("Error: Invalid rule: " + line);
-				System.exit(1);
-			}
-		}
-	}*/
-
-	/*public String[] getLines() {
-		return lines;
-	}*/
-
-	/*public String getNonTerminals() {
-		String ntstring = "";
-
-		if (nonTerminals != null) return nonTerminals;
-
-		for (String s : lines) {
-			char[] chars = s.toCharArray();
-
-			if (ntstring.indexOf(chars[0]) == -1) {
-				ntstring += chars[0];
-
-				if (RESERVED.indexOf(chars[0]) != -1 || chars[0] == '^') {
-					System.out.println("Error: " + chars[0] + " is a reserved character.");
-					System.exit(1);
-				}
-			}
-		}
-
-		nonTerminals = ntstring;
-
-		return nonTerminals;
-	}*/
-
-	/*public String getTerminals() {
-		String tstring = "";
-
-		if (terminals != null) return terminals;
-
-		for (String s : lines) {
-			char[] chars = s.toCharArray();
-
-			for (int i = 0; i < chars.length; i++) {
-				if (RESERVED.indexOf(chars[i]) == -1 && getNonTerminals().indexOf(chars[i]) == -1) {
-					tstring += chars[i];
-				}
-			}
-		}
-
-		String unique = "";
-
-		for (int i = 0; i < tstring.length(); i++) {
-			if (unique.indexOf(tstring.charAt(i)) == -1) unique += tstring.charAt(i);
-		}
-
-		terminals = unique;
-
-		return terminals;
-	}*/
-
-	/*public String getAxiom() {
-		String s = String.valueOf(getNonTerminals().charAt(0));
-
-		if (getRules().keySet().contains(s + "'")) return s + "'";
-
-		return s;
-	}*/
-
-	/*public Map<String, String[]> getRules() {
-		if (rules != null) return rules;
-
-		rules = new HashMap<>();
-
-		for (char nonTerminal : getNonTerminals().toCharArray()) {
-			for (String line : lines) {
-				char[] chars = line.toCharArray();
-
-				if (chars[0] == nonTerminal) {
-					String[] rule = line.split("=")[1].split(";")[0].split("\\|");
-					rules.put(String.valueOf(nonTerminal), rule);
-				}
-			}
-		}
-
-		return rules;
-	}*/
-
-	/*public String[] getRules(String nonTerminal) {
-		if (getNonTerminals().indexOf(nonTerminal) == -1) {
-			System.out.println("Warning: " + nonTerminal + " is not a non-terminal.");
-			return null;
-		}
-
-		return getRules().get(nonTerminal);
-	}*/
-
-	/*public void printRules() {
-		if (rules.containsKey(getAxiom() + "'")) System.out.println(getAxiom() + "' -> " + getAxiom());
-
-		for (char c : getNonTerminals().toCharArray()) {
-			String[] rules = getRules(String.valueOf(c));
-
-			for (String rule : rules) {
-				System.out.println(c + " -> " + rule);
-			}
-		}
-	}*/
-
-	/*public String firsts(String nonTerminal) {
-		String firsts = firsts(nonTerminal, "");
-		if (canBeEmpty(nonTerminal)) firsts += "$";
-
-		return firsts.replace("^", "");
-	}*/
-
-	/*private String firsts(String nonTerminal, String visited) {
-		if (visited.indexOf(nonTerminal) != -1) {
-			return "";
-		}
-
-		if (getNonTerminals().indexOf(nonTerminal) == -1) {
-			return nonTerminal;
-		}
-
-		String firsts = "";
-
-		for (String rule : getRules(String.valueOf(nonTerminal))) {
-			char[] chars = rule.toCharArray();
-
-			int i = 0;
-
-			while (i < chars.length) {
-				if (getNonTerminals().indexOf(chars[i]) != -1) {
-					if (firsts.indexOf(chars[i]) == -1) firsts += firsts(String.valueOf(chars[i]), visited + nonTerminal);
-					if (!canBeEmpty(String.valueOf(chars[i]))) break;
-				} else {
-					if (firsts.indexOf(chars[i]) == -1) firsts += chars[i];
-					break;
-				}
-
-				i++;
-			}
-		}
-
-		return firsts;
-	}*/
-
-	/*public String firstsRule(String rule) {
-		String firsts = "";
-
-		char[] chars = rule.toCharArray();
-
-		int i = 0;
-
-		while (i < chars.length) {
-			firsts = firsts.replace("$", "");
-
-			if (getNonTerminals().indexOf(chars[i]) != -1) {
-				if (firsts.indexOf(chars[i]) == -1) firsts += firsts(String.valueOf(chars[i]));
-				if (!canBeEmpty(String.valueOf(chars[i]))) break;
+		for (String value : values) {
+			if (canBeEmpty(value)) {
+				firsts.addAll(firsts(value));
 			} else {
-				if (firsts.indexOf(chars[i]) == -1) firsts += chars[i];
+				firsts.addAll(firsts(value));
 				break;
 			}
-
-			i++;
 		}
 
-		String unique = "";
+		List<String> unique = new ArrayList<>();
 
-		for (char c : firsts.toCharArray()) if (unique.indexOf(c) == -1) unique += c;
+		for (String first : firsts) if (!unique.contains(first)) unique.add(first);
 
 		return unique;
-	}*/
+	}
 
-	/*public boolean canBeEmpty(String nonTerminal) {
-		return canBeEmpty(nonTerminal, "");
-	}*/
+	public List<String> firsts(String value) {
+		return firsts(value, new ArrayList<>());
+	}
 
-	/*private boolean canBeEmpty(String nonTerminal, String visited) {
-		if (visited.indexOf(nonTerminal) != -1) return false;
+	private List<String> firsts(String value, List<String> visited) {
+		if (visited.contains(value)) return new ArrayList<>();
 
-		if (getNonTerminals().indexOf(nonTerminal) == -1) return false;
+		List<String> firsts = new ArrayList<>();
 
-		for (String line : getRules(nonTerminal)) {
-			if (line.equals("^")) return true;
+		if (!nonTerminals.contains(value)) firsts.add(value);
 
-			char[] chars = line.toCharArray();
-			boolean empty = true;
+		else {
+			for (List<Token> rule : rules.get(value)) {
+				if (rule.size() == 0) continue;
 
-			for (int i = 0; i < chars.length; i++) {
-				if (getTerminals().indexOf(chars[i]) != -1) {
-					empty = false;
-					break;
+				for (Token token : rule) {
+					if (terminals.contains(token.getValue())) {
+						firsts.add(token.getValue());
+						break;
+					} else {
+						List<String> visited2 = new ArrayList<>(visited);
+						visited2.add(value);
+
+						List<String> firsts2 = firsts(token.getValue(), visited2);
+
+						for (String first : firsts2) {
+							if (firsts.indexOf(first) == -1) firsts.add(first);
+						}
+
+						if (!canBeEmpty(token.getValue())) break;
+					}
 				}
 			}
+		}
 
-			if (empty) {
-				for (int i = 0; i < chars.length; i++) {
-					if (getNonTerminals().indexOf(chars[i]) != -1) {
-						if (!canBeEmpty(String.valueOf(chars[i]), visited + nonTerminal)) {
-							empty = false;
-							break;
-						}
-					}
+		if (firsts.contains("^")) firsts.remove("^");
+
+		return firsts;
+	}
+
+	public boolean canBeEmpty(String nonTerminal) {
+		return canBeEmpty(nonTerminal, new ArrayList<>());
+	}
+
+	private boolean canBeEmpty(String nonTerminal, List<String> visited) {
+		if (nonTerminal.equals("^")) return true;
+		if (terminals.contains(nonTerminal)) return false;
+		if (visited.contains(nonTerminal)) return false;
+		if (!rules.containsKey(nonTerminal)) return false;
+
+		for (List<Token> rule : rules.get(nonTerminal)) {
+			if (rule.size() == 0 || rule.size() == 1 && rule.get(0) instanceof Epsilon) return true;
+
+			boolean empty = true;
+
+			for (Token token : rule) {
+				ArrayList<String> visited2 = new ArrayList<>(visited);
+				visited2.add(nonTerminal);
+
+				if (!canBeEmpty(token.getValue(), visited2)) {
+					empty = false;
+					break;
 				}
 			}
 
@@ -349,11 +250,19 @@ public class Grammar {
 		}
 
 		return false;
-	}*/
+	}
 
-	/*public Grammar copy() {
-		Grammar g = new Grammar(file);
+	public Grammar copy() {
+		Grammar grammar = null;
 
-		return g;
-	}*/
+		try {
+			grammar = new Grammar(tokenizer);
+		} catch (SyntaxException e) {
+			e.printStackTrace();
+		}
+
+		if (augmented) grammar.augment();
+
+		return grammar;
+	}
 }
