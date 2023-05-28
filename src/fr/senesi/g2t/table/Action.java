@@ -1,7 +1,8 @@
 package fr.senesi.g2t.table;
 
+import fr.senesi.g2t.fsm.Rule;
+
 public class Action {
-	/*
 	private ActionType type;
 	private Rule toRule;
 	private int toState;
@@ -47,5 +48,4 @@ public class Action {
 		ACCEPT,
 		ERROR
 	}
-	*/
 }

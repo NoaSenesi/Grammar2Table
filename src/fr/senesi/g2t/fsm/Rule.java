@@ -88,6 +88,13 @@ public class Rule {
 		return res;
 	}
 
+	public String toStringFree() {
+		String r = String.join(" ", right);
+		if (r.equals("")) r = "^";
+
+		return left + " -> " + r;
+	}
+
 	public boolean equals(Object o) {
 		if (!(o instanceof Rule)) return false;
 

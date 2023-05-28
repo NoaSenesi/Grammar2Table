@@ -3,8 +3,10 @@ package fr.senesi.g2t;
 import fr.senesi.g2t.exception.SyntaxException;
 import fr.senesi.g2t.exception.TokenizationException;
 import fr.senesi.g2t.fsm.FiniteStateMachine;
+import fr.senesi.g2t.fsm.State;
 import fr.senesi.g2t.grammar.Grammar;
 import fr.senesi.g2t.reader.Reader;
+import fr.senesi.g2t.table.Table;
 import fr.senesi.g2t.tokenizer.Tokenizer;
 
 public class Grammar2Table {
@@ -42,18 +44,10 @@ public class Grammar2Table {
 		FiniteStateMachine fsm = new FiniteStateMachine(grammar);
 		fsm.createAllStates();
 
-		for (fr.senesi.g2t.fsm.State s : fsm.getStates()) s.print();
-
-		//Grammar g = new Grammar(args[0]);
-
-
-		/*FSM fsm = new FSM(g);
-		fsm.createAllStates();
+		for (State s : fsm.getStates()) s.print();
 
 		Table table = new Table(fsm);
 		table.saveCSV(args[0] + ".csv");
 		table.save(args[0] + ".txt");
-
-		for (State s : fsm.getStates()) s.print();*/
 	}
 }
