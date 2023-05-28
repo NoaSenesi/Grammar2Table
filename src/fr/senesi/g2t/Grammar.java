@@ -1,16 +1,15 @@
 package fr.senesi.g2t;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class Grammar {
-	private static final String RESERVED = "=|;$";
+	/*private static final String RESERVED = "=|;$";
 	private String[] lines;
 	private String terminals, nonTerminals, file;
-	private Map<String, String[]> rules;
+	private Map<String, String[]> rules;*/
+
+	
 
 
-	public Grammar(String file) {
+	/*public Grammar(String file) {
 		this.file = file;
 
 		lines = Reader.getLines(file);
@@ -22,13 +21,13 @@ public class Grammar {
 				System.exit(1);
 			}
 		}
-	}
+	}*/
 
-	public String[] getLines() {
+	/*public String[] getLines() {
 		return lines;
-	}
+	}*/
 
-	public String getNonTerminals() {
+	/*public String getNonTerminals() {
 		String ntstring = "";
 
 		if (nonTerminals != null) return nonTerminals;
@@ -49,9 +48,9 @@ public class Grammar {
 		nonTerminals = ntstring;
 
 		return nonTerminals;
-	}
+	}*/
 
-	public String getTerminals() {
+	/*public String getTerminals() {
 		String tstring = "";
 
 		if (terminals != null) return terminals;
@@ -75,17 +74,17 @@ public class Grammar {
 		terminals = unique;
 
 		return terminals;
-	}
+	}*/
 
-	public String getAxiom() {
+	/*public String getAxiom() {
 		String s = String.valueOf(getNonTerminals().charAt(0));
 
 		if (getRules().keySet().contains(s + "'")) return s + "'";
 
 		return s;
-	}
+	}*/
 
-	public Map<String, String[]> getRules() {
+	/*public Map<String, String[]> getRules() {
 		if (rules != null) return rules;
 
 		rules = new HashMap<>();
@@ -102,18 +101,18 @@ public class Grammar {
 		}
 
 		return rules;
-	}
+	}*/
 
-	public String[] getRules(String nonTerminal) {
+	/*public String[] getRules(String nonTerminal) {
 		if (getNonTerminals().indexOf(nonTerminal) == -1) {
 			System.out.println("Warning: " + nonTerminal + " is not a non-terminal.");
 			return null;
 		}
 
 		return getRules().get(nonTerminal);
-	}
+	}*/
 
-	public void printRules() {
+	/*public void printRules() {
 		if (rules.containsKey(getAxiom() + "'")) System.out.println(getAxiom() + "' -> " + getAxiom());
 
 		for (char c : getNonTerminals().toCharArray()) {
@@ -123,16 +122,16 @@ public class Grammar {
 				System.out.println(c + " -> " + rule);
 			}
 		}
-	}
+	}*/
 
-	public String firsts(String nonTerminal) {
+	/*public String firsts(String nonTerminal) {
 		String firsts = firsts(nonTerminal, "");
 		if (canBeEmpty(nonTerminal)) firsts += "$";
 
 		return firsts.replace("^", "");
-	}
+	}*/
 
-	private String firsts(String nonTerminal, String visited) {
+	/*private String firsts(String nonTerminal, String visited) {
 		if (visited.indexOf(nonTerminal) != -1) {
 			return "";
 		}
@@ -162,9 +161,9 @@ public class Grammar {
 		}
 
 		return firsts;
-	}
+	}*/
 
-	public String firstsRule(String rule) {
+	/*public String firstsRule(String rule) {
 		String firsts = "";
 
 		char[] chars = rule.toCharArray();
@@ -190,13 +189,13 @@ public class Grammar {
 		for (char c : firsts.toCharArray()) if (unique.indexOf(c) == -1) unique += c;
 
 		return unique;
-	}
+	}*/
 
-	public boolean canBeEmpty(String nonTerminal) {
+	/*public boolean canBeEmpty(String nonTerminal) {
 		return canBeEmpty(nonTerminal, "");
-	}
+	}*/
 
-	private boolean canBeEmpty(String nonTerminal, String visited) {
+	/*private boolean canBeEmpty(String nonTerminal, String visited) {
 		if (visited.indexOf(nonTerminal) != -1) return false;
 
 		if (getNonTerminals().indexOf(nonTerminal) == -1) return false;
@@ -229,11 +228,11 @@ public class Grammar {
 		}
 
 		return false;
-	}
+	}*/
 
-	public Grammar copy() {
+	/*public Grammar copy() {
 		Grammar g = new Grammar(file);
 
 		return g;
-	}
+	}*/
 }

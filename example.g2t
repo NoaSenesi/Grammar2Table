@@ -1,9 +1,10 @@
 // Example comment
 # Example comment 2
 /*
-Example comment 3
+This is a grammar that describes a grammar rule
+for this syntax
 */
 
-S = nonTerminal "=" E ";";
-E = E "|" R | R;
+S = nonTerminal \= E \; ;
+E = E \| R | R;
 R = nonTerminal R | terminal R | ^;
