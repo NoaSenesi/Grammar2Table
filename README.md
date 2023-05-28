@@ -20,7 +20,7 @@ Empty words (epsilon) are written as `^`
 # a, b, c, d, e, f, \= and + are automatically detected to be terminals
 /*
 With an anti-slash,
-you can escape the following characters: | ^ ; = \
+you can escape the following characters: | ; = \
 */
 
 S = a NonTerm b | c;
