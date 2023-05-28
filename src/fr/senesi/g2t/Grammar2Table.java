@@ -1,7 +1,8 @@
 package fr.senesi.g2t;
 
+import fr.senesi.g2t.exception.SyntaxException;
 import fr.senesi.g2t.exception.TokenizationException;
-import fr.senesi.g2t.tokenizer.Token;
+import fr.senesi.g2t.grammar.Grammar;
 import fr.senesi.g2t.tokenizer.Tokenizer;
 
 public class Grammar2Table {
@@ -16,15 +17,29 @@ public class Grammar2Table {
 
 		String[] read = Reader.getLines(args[0]);
 
-		Tokenizer tokenizer = new Tokenizer(String.join("\n", read));
+		Tokenizer tokenizer = null;
 
 		try {
-			tokenizer.tokenize();
+			tokenizer = new Tokenizer(String.join("\n", read));
 		} catch (TokenizationException e) {
 			e.printStackTrace();
 		}
 
-		for (Token t : tokenizer.getTokens()) System.out.println(t);
+		if (tokenizer == null) System.exit(1);
+
+		Grammar grammar = null;
+
+		try {
+			grammar = new Grammar(tokenizer);
+		} catch (SyntaxException e) {
+			e.printStackTrace();
+		}
+
+		if (grammar == null) System.exit(1);
+
+		System.out.println(grammar.getTerminals());
+		System.out.println(grammar.getNonTerminals());
+		grammar.print();
 
 		//Grammar g = new Grammar(args[0]);
 

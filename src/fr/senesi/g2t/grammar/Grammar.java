@@ -1,13 +1,134 @@
-package fr.senesi.g2t;
+package fr.senesi.g2t.grammar;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import fr.senesi.g2t.exception.SyntaxException;
+import fr.senesi.g2t.tokenizer.Assign;
+import fr.senesi.g2t.tokenizer.EOF;
+import fr.senesi.g2t.tokenizer.Identifier;
+import fr.senesi.g2t.tokenizer.Ruleable;
+import fr.senesi.g2t.tokenizer.SemiColon;
+import fr.senesi.g2t.tokenizer.Separator;
+import fr.senesi.g2t.tokenizer.Token;
+import fr.senesi.g2t.tokenizer.Tokenizer;
+import fr.senesi.g2t.tokenizer.Value;
 
 public class Grammar {
 	/*private static final String RESERVED = "=|;$";
 	private String[] lines;
 	private String terminals, nonTerminals, file;
 	private Map<String, String[]> rules;*/
+	private Map<String, List<List<Token>>> rules;
+	private Tokenizer tokenizer;
+	private List<String> terminals, nonTerminals;
 
-	
+	public Grammar(Tokenizer tokenizer) throws SyntaxException {
+		this.tokenizer = tokenizer;
 
+		rules = new LinkedHashMap<>();
+		terminals = new ArrayList<>();
+		nonTerminals = new ArrayList<>();
+
+		makeRules();
+	}
+
+	private void makeRules() throws SyntaxException {
+		for (int i = 0; i < tokenizer.getTokens().size(); i++) {
+			Token token = tokenizer.getTokens().get(i);
+
+			if (token instanceof EOF) break;
+
+			if (token instanceof SemiColon) continue;
+			if (!(token instanceof Identifier)) throw new SyntaxException("Unexpected " + token.getClass().getSimpleName() + ", expected Identifier instead at line " + token.getLine());
+
+			if (!nonTerminals.contains(token.getValue())) nonTerminals.add(token.getValue());
+
+			if (i + 1 >= tokenizer.getTokens().size()) throw new SyntaxException("Unexpected end of file, expected = instead");
+
+			Token next = tokenizer.getTokens().get(i + 1);
+			if (!(next instanceof Assign)) throw new SyntaxException("Unexpected " + next.getClass().getSimpleName() + " token, expected = instead at line " + next.getLine());
+
+			List<List<Token>> rule = new ArrayList<>();
+			List<Token> current = new ArrayList<>();
+
+			int cursor = i + 2;
+
+			for (int j = cursor; j < tokenizer.getTokens().size(); j++) {
+				Token t = tokenizer.getTokens().get(j);
+
+				if (t instanceof EOF) throw new SyntaxException("Unexpected end of file, expected ; instead");
+
+				if (t instanceof SemiColon) {
+					cursor = j;
+
+					if (current.size() == 0) throw new SyntaxException("Unexpected ; at line " + t.getLine());
+					rule.add(current);
+					if (rules.containsKey(token.getValue())) rules.get(token.getValue()).addAll(rule);
+
+					else {
+						rules.put(token.getValue(), rule);
+					}
+
+					break;
+				}
+
+				if (t instanceof Separator) {
+					if (current.size() == 0) throw new SyntaxException("Unexpected " + t.getClass().getSimpleName() + " token at line " + t.getLine());
+
+					rule.add(current);
+					current = new ArrayList<>();
+
+					continue;
+				}
+
+				if (t instanceof Ruleable) {
+					if (!terminals.contains(t.getValue()) && t instanceof Value) terminals.add(t.getValue());
+					current.add(t);
+				}
+
+				else throw new SyntaxException("Unexpected " + t.getClass().getSimpleName() + " token at line " + t.getLine());
+
+			}
+
+			i = cursor;
+		}
+
+		for (String nt : nonTerminals) {
+			if (terminals.contains(nt)) terminals.remove(nt);
+		}
+	}
+
+	public Map<String, List<List<Token>>> getRules() {
+		return rules;
+	}
+
+	public List<String> getTerminals() {
+		return terminals;
+	}
+
+	public List<String> getNonTerminals() {
+		return nonTerminals;
+	}
+
+	public void print() {
+		for (String nt : rules.keySet()) {
+			System.out.print(nt + " = ");
+
+			for (List<Token> rule : rules.get(nt)) {
+				for (Token t : rule) {
+					if (t instanceof Value && !(t instanceof Identifier)) System.out.print("\"" + t.getValue() + "\" ");
+					else System.out.print(t.getValue() + " ");
+				}
+
+				System.out.print("| ");
+			}
+
+			System.out.println("\b\b ");
+		}
+	}
 
 	/*public Grammar(String file) {
 		this.file = file;

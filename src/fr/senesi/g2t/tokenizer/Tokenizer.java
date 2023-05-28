@@ -9,17 +9,18 @@ public class Tokenizer {
 	private List<Token> tokens;
 	private String stream;
 
-	public Tokenizer(String stream) {
+	public Tokenizer(String stream) throws TokenizationException {
 		tokens = new ArrayList<>();
-
 		this.stream = stream;
+
+		tokenize();
 	}
 
 	public List<Token> getTokens() {
 		return tokens;
 	}
 
-	public void tokenize() throws TokenizationException {
+	private void tokenize() throws TokenizationException {
 		int cursor = 0;
 		int line = 1;
 
@@ -94,6 +95,8 @@ public class Tokenizer {
 				}
 			} else if (c == ' ' || c == '\t' || c == '\r') {
 
+			} else if (c == '$') {
+				throw new TokenizationException("Invalid character " + c + " at line " + line);
 			} else {
 				tokens.add(new Value(line, String.valueOf(c)));
 			}

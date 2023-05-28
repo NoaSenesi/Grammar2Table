@@ -1,10 +1,10 @@
 package fr.senesi.g2t.tokenizer;
 
-public class Identifier extends Token {
+public class Identifier extends Value {
 	private String value;
 
 	public Identifier(int line, String value) {
-		super(line);
+		super(line, value);
 		this.value = value;
 	}
 
