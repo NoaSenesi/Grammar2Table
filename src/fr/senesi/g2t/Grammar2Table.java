@@ -10,13 +10,26 @@ import fr.senesi.g2t.table.Table;
 import fr.senesi.g2t.tokenizer.Tokenizer;
 
 public class Grammar2Table {
-	public static final String VERSION = "2.0.0";
+	public static final String VERSION = "2.1.0";
 
 	public static void main(String[] args) {
-		if (args.length != 1) {
+		if (args.length == 0) {
+			args = new String[]{"help"};
+		}
+
+		if (args[0].equals("help") || args[0].equals("?")) {
 			System.out.println("Grammar2Table v" + VERSION);
-			System.out.println("Please input a file name");
+			System.out.println("Usage: g2t <file> [options]");
+			System.out.println("Options:");
+			System.out.println("  -s, --show-states    Show all states of the finite state machine");
+			System.out.println("  -p, --optimize-csv   Optimize CSV file by removing ERROR actions");
 			System.exit(0);
+		}
+
+		boolean showStates = false, optimizeCSV = false;
+		for (int i = 1; i < args.length; i++) {
+			if (args[i].equals("--show-states") || args[i].equals("-s")) showStates = true;
+			if (args[i].equals("--optimize-csv") || args[i].equals("-p")) optimizeCSV = true;
 		}
 
 		String[] read = Reader.getLines(args[0]);
@@ -44,10 +57,10 @@ public class Grammar2Table {
 		FiniteStateMachine fsm = new FiniteStateMachine(grammar);
 		fsm.createAllStates();
 
-		for (State s : fsm.getStates()) s.print();
+		if (showStates) for (State s : fsm.getStates()) s.print();
 
 		Table table = new Table(fsm);
-		table.saveCSV(args[0] + ".csv");
+		table.saveCSV(args[0] + ".csv", optimizeCSV);
 		table.save(args[0] + ".txt");
 	}
 }

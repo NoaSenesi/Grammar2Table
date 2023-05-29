@@ -214,6 +214,10 @@ public class Table {
 	}
 
 	public void saveCSV(String filename) {
+		saveCSV(filename, false);
+	}
+
+	public void saveCSV(String filename, boolean optimizeCSV) {
 		File file = new File(filename);
 		if (file.exists()) file.delete();
 
@@ -230,7 +234,10 @@ public class Table {
 				writer.write("\nI" + i);
 
 				for (int j = 0; j < getTable()[i].length; j++) {
-					writer.write("," + getTable()[i][j].toString());
+					Action action = getTable()[i][j];
+
+					writer.write(",");
+					if (!optimizeCSV || action.getType() != ActionType.ERROR) writer.write(action.toString());
 				}
 			}
 
