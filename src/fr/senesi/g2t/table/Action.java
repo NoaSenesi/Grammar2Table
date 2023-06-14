@@ -46,6 +46,7 @@ public class Action {
 		SHIFT,
 		REDUCE,
 		ACCEPT,
+		GOTO,
 		ERROR
 	}
 }

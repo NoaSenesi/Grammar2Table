@@ -55,7 +55,8 @@ public class Table {
 						if (table[i][j] == null) table[i][j] = new Action(ActionType.ERROR);
 					}
 				} else {
-					table[i][j] = new Action(ActionType.SHIFT, s.shift(token).getId());
+					ActionType type = fsm.getGrammar().getNonTerminals().contains(token) ? ActionType.GOTO : ActionType.SHIFT;
+					table[i][j] = new Action(type, s.shift(token).getId());
 				}
 			}
 		}
@@ -214,10 +215,10 @@ public class Table {
 	}
 
 	public void saveCSV(String filename) {
-		saveCSV(filename, false);
+		saveCSV(filename, 0);
 	}
 
-	public void saveCSV(String filename, boolean optimizeCSV) {
+	public void saveCSV(String filename, int optimizeCSVLevel) {
 		File file = new File(filename);
 		if (file.exists()) file.delete();
 
@@ -225,20 +226,37 @@ public class Table {
 			file.createNewFile();
 			FileWriter writer = new FileWriter(file);
 
-			writer.write("State");
-			for (String token : tokens) {
-				writer.write("," + token);
+			if (optimizeCSVLevel < 2) writer.write("State");
+			for (int i = 0; i < tokens.size(); i++) {
+				writer.write((i == 0 && optimizeCSVLevel >= 2 ? "" : ",") + tokens.get(i));
 			}
 
 			for (int i = 0; i < getTable().length; i++) {
-				writer.write("\nI" + i);
+				if (optimizeCSVLevel <= 1) writer.write("\nI" + i);
+				else writer.write("\n");
+
+				String line = "";
 
 				for (int j = 0; j < getTable()[i].length; j++) {
 					Action action = getTable()[i][j];
 
-					writer.write(",");
-					if (!optimizeCSV || action.getType() != ActionType.ERROR) writer.write(action.toString());
+					if (optimizeCSVLevel <= 1 || j != 0) line += ",";
+					if (optimizeCSVLevel == 0 || action.getType() != ActionType.ERROR) {
+						String part = action.toString();
+
+						if (optimizeCSVLevel >= 3) {
+							String[] parts = part.split(" ");
+							parts[0] = String.valueOf(parts[0].charAt(0));
+							part = String.join(" ", parts);
+						}
+
+						line += part;
+					}
 				}
+
+				if (optimizeCSVLevel >= 2) line = line.replaceAll(",*$", "");
+
+				writer.write(line);
 			}
 
 			writer.close();

@@ -16,7 +16,13 @@ Empty words (epsilon) are written as `^`
 ### Options
 
 - `-s, --show-states`: Shows all states of the finite state machine
-- `-p, --optimize-csv`: Optimizes CSV file by removing ERROR actions
+- `-p[N], --optimize-csv[=N]`: Optimize CSV file with level N (default: 1)
+
+#### Optimize CSV
+0. No optimization
+1. Remove ERROR actions
+2. Remove leading commas and state number
+3. Replace action type by a single character
 
 ## Syntax
 
