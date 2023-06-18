@@ -251,7 +251,7 @@ public class Table {
 							if (action.getType() == ActionType.SHIFT || action.getType() == ActionType.GOTO) parts[1] = parts[1].substring(1, parts[1].length());
 							else if (action.getType() == ActionType.REDUCE) {
 								if (optimizeCSVLevel >= 4) {
-									parts[2] = String.valueOf(parts.length - 3);
+									parts[2] = parts[3].equals("^") ? "0" : String.valueOf(parts.length - 3);
 
 									for (int n = 3; n < parts.length; n++) parts[n] = "";
 								}
