@@ -10,7 +10,7 @@ import fr.senesi.g2t.table.Table;
 import fr.senesi.g2t.tokenizer.Tokenizer;
 
 public class Grammar2Table {
-	public static final String VERSION = "2.1.2";
+	public static final String VERSION = "2.2.0";
 
 	public static void main(String[] args) {
 		if (args.length == 0) {
@@ -22,20 +22,26 @@ public class Grammar2Table {
 			System.out.println("Usage: g2t <file> [options]");
 			System.out.println("Options:");
 			System.out.println("  -s,     --show-states         Show all states of the finite state machine");
+			System.out.println("  -n,     --no-table            Prevents the table from exporting");
 			System.out.println("  -p[N],  --optimize-csv[=N]    Optimize CSV file with level N (default: 1)");
 			System.out.println("                                0: no optimization");
 			System.out.println("                                1: remove ERROR actions");
 			System.out.println("                                2: remove leading commas and state number");
 			System.out.println("                                3: replace action type by a single character,");
 			System.out.println("                                   replace arrow by equals and removes \"I\" in states");
+			System.out.println("                                4: Replace REDUCE action rules by the non-terminal to");
+			System.out.println("                                   reduce to and the number of stack pop to do");
+			System.out.println("                                5: Remove first space after the first letter");
+			System.out.println("                                   and replace non-terminals by their index at the top");
 			System.exit(0);
 		}
 
-		boolean showStates = false;
+		boolean showStates = false, noTable = false;
 		int optimizeCSVLevel = 0;
 
 		for (int i = 1; i < args.length; i++) {
 			if (args[i].equals("--show-states") || args[i].equals("-s")) showStates = true;
+			else if (args[i].equals("--no-table") || args[i].equals("-n")) noTable = true;
 
 			else if (args[i].equals("--optimize-csv") || args[i].equals("-p")) optimizeCSVLevel = 1;
 			else if (args[i].startsWith("--optimize-csv=") || args[i].startsWith("-p")) {
@@ -81,6 +87,6 @@ public class Grammar2Table {
 		Table table = new Table(fsm);
 		String name = args[0].substring(0, args[0].lastIndexOf('.'));
 		table.saveCSV(name + ".csv", optimizeCSVLevel);
-		table.save(name + ".g2table");
+		if (!noTable) table.save(name + ".g2table");
 	}
 }

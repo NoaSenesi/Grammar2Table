@@ -249,9 +249,19 @@ public class Table {
 							parts[0] = String.valueOf(parts[0].charAt(0));
 
 							if (action.getType() == ActionType.SHIFT || action.getType() == ActionType.GOTO) parts[1] = parts[1].substring(1, parts[1].length());
-							else if (action.getType() == ActionType.REDUCE) parts[2] = "=";
+							else if (action.getType() == ActionType.REDUCE) {
+								if (optimizeCSVLevel >= 4) {
+									parts[2] = String.valueOf(parts.length - 3);
 
-							part = String.join(" ", parts);
+									for (int n = 3; n < parts.length; n++) parts[n] = "";
+								}
+
+								else parts[2] = "=";
+
+								if (optimizeCSVLevel >= 5) parts[1] = tokens.indexOf(parts[1]) + " ";
+							}
+
+							part = String.join(optimizeCSVLevel >= 5 ? "" : " ", parts).trim();
 						}
 
 						line += part;
