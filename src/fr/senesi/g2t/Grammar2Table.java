@@ -10,7 +10,7 @@ import fr.senesi.g2t.table.Table;
 import fr.senesi.g2t.tokenizer.Tokenizer;
 
 public class Grammar2Table {
-	public static final String VERSION = "2.1.1";
+	public static final String VERSION = "2.1.2";
 
 	public static void main(String[] args) {
 		if (args.length == 0) {
@@ -26,7 +26,8 @@ public class Grammar2Table {
 			System.out.println("                                0: no optimization");
 			System.out.println("                                1: remove ERROR actions");
 			System.out.println("                                2: remove leading commas and state number");
-			System.out.println("                                3: replace action type by a single character");
+			System.out.println("                                3: replace action type by a single character,");
+			System.out.println("                                   replace arrow by equals and removes \"I\" in states");
 			System.exit(0);
 		}
 
