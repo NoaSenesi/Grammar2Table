@@ -22,7 +22,7 @@ Empty words (epsilon) are written as `^`
 0. No optimization
 1. Remove ERROR actions
 2. Remove leading commas and state number
-3. Replace action type by a single character
+3. Replace action type by a single character, replace arrow by equals and removes "I" in states
 
 ## Syntax
 

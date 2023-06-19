@@ -247,6 +247,10 @@ public class Table {
 						if (optimizeCSVLevel >= 3) {
 							String[] parts = part.split(" ");
 							parts[0] = String.valueOf(parts[0].charAt(0));
+
+							if (action.getType() == ActionType.SHIFT || action.getType() == ActionType.GOTO) parts[1] = parts[1].substring(1, parts[1].length());
+							else if (action.getType() == ActionType.REDUCE) parts[2] = "=";
+
 							part = String.join(" ", parts);
 						}
 
