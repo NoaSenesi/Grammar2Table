@@ -260,6 +260,8 @@ public class Table {
 			}
 
 			writer.close();
+
+			if (fsm.getGrammar().getTerminals().contains(",")) System.out.println("Warning: CSV file contains comma in terminals. It may cause problems when using it as input.");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
