@@ -10,7 +10,7 @@ import fr.senesi.g2t.table.Table;
 import fr.senesi.g2t.tokenizer.Tokenizer;
 
 public class Grammar2Table {
-	public static final String VERSION = "2.2.1";
+	public static final String VERSION = "3.0.0";
 
 	public static void main(String[] args) {
 		if (args.length == 0) {
@@ -23,6 +23,8 @@ public class Grammar2Table {
 			System.out.println("Options:");
 			System.out.println("  -s,     --show-states         Show all states of the finite state machine");
 			System.out.println("  -n,     --no-table            Prevents the table from exporting");
+			System.out.println("  -q,     --quiet               Quiet mode, only show errors");
+			System.out.println("  -c,     --compact             Merge states to remove doubles when no ambiguity");
 			System.out.println("  -p[N],  --optimize-csv[=N]    Optimize CSV file with level N (default: 1)");
 			System.out.println("                                0: no optimization");
 			System.out.println("                                1: remove ERROR actions");
@@ -36,12 +38,14 @@ public class Grammar2Table {
 			System.exit(0);
 		}
 
-		boolean showStates = false, noTable = false;
+		boolean showStates = false, noTable = false, quiet = false, compact = false;
 		int optimizeCSVLevel = 0;
 
 		for (int i = 1; i < args.length; i++) {
 			if (args[i].equals("--show-states") || args[i].equals("-s")) showStates = true;
 			else if (args[i].equals("--no-table") || args[i].equals("-n")) noTable = true;
+			else if (args[i].equals("--quiet") || args[i].equals("-q")) quiet = true;
+			else if (args[i].equals("--compact") || args[i].equals("-c")) compact = true;
 
 			else if (args[i].equals("--optimize-csv") || args[i].equals("-p")) optimizeCSVLevel = 1;
 			else if (args[i].startsWith("--optimize-csv=") || args[i].startsWith("-p")) {
@@ -61,6 +65,8 @@ public class Grammar2Table {
 
 		Tokenizer tokenizer = null;
 
+		if (!quiet) System.out.println("Tokenizing...");
+
 		try {
 			tokenizer = new Tokenizer(String.join("\n", read));
 		} catch (TokenizationException e) {
@@ -71,6 +77,8 @@ public class Grammar2Table {
 
 		Grammar grammar = null;
 
+		if (!quiet) System.out.println("Parsing...");
+
 		try {
 			grammar = new Grammar(tokenizer);
 		} catch (SyntaxException e) {
@@ -79,14 +87,24 @@ public class Grammar2Table {
 
 		if (grammar == null) System.exit(1);
 
+		if (!quiet) System.out.println("Creating finite state machine...");
+
 		FiniteStateMachine fsm = new FiniteStateMachine(grammar);
+		if (quiet) fsm.setQuiet(true);
 		fsm.createAllStates();
 
 		if (showStates) for (State s : fsm.getStates()) s.print();
 
+		if (!quiet) System.out.println("Creating table...");
 		Table table = new Table(fsm);
+		if (compact) table.setCompact();
+
+		if (!quiet) System.out.println("Exporting...");
+
 		String name = args[0].substring(0, args[0].lastIndexOf('.'));
 		table.saveCSV(name + ".csv", optimizeCSVLevel);
 		if (!noTable) table.save(name + ".g2table");
+
+		if (!quiet) System.out.println("Done!");
 	}
 }

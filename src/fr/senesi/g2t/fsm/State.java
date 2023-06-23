@@ -146,4 +146,8 @@ public class State {
 		for (int i = 0; i < maxlen+2; i++) System.out.print("─");
 		System.out.println("┘");
 	}
+
+	public String toString() {
+		return "State: I" + id;
+	}
 }

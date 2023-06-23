@@ -15,6 +15,7 @@ public class Table {
 	private FiniteStateMachine fsm;
 	private List<String> tokens;
 	private Action[][] table;
+	private boolean compact = false;
 
 	public Table(FiniteStateMachine fsm) {
 		this.fsm = fsm;
@@ -66,6 +67,10 @@ public class Table {
 		if (table == null) buildTable();
 
 		return table;
+	}
+
+	public void setCompact() {
+		compact = true;
 	}
 
 	public void print() {

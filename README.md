@@ -17,6 +17,8 @@ Empty words (epsilon) are written as `^`
 
 - `-s, --show-states`: Shows all states of the finite state machine
 - `-n, --no-table`: Prevents the table from exporting
+- `-q, --quiet`: Quiet mode, only show errors
+- `-c, --compact`: Merge states to remove doubles when no ambiguity
 - `-p[N], --optimize-csv[=N]`: Optimize CSV file with level N (default: 1)
 
 #### Optimize CSV

@@ -9,6 +9,7 @@ import fr.senesi.g2t.tokenizer.Token;
 public class FiniteStateMachine {
 	private Grammar grammar;
 	private List<State> states;
+	private boolean quiet = false;
 
 	public FiniteStateMachine(Grammar g) {
 		grammar = g.copy();
@@ -93,6 +94,8 @@ public class FiniteStateMachine {
 		tokens.addAll(grammar.getTerminals());
 
 		for (int i = 0; i < states.size(); i++) {
+			if (!quiet) System.out.print("Creating state " + i + "...\r");
+
 			if (i != 0) state = states.get(i);
 
 			for (String token : tokens) {
@@ -104,7 +107,39 @@ public class FiniteStateMachine {
 			}
 		}
 
+		if (!quiet) System.out.println(states.size() + " states created in total");
+
 		for (State s : states) s.factorize();
+	}
+
+	public List<List<State>> findDuplicates() {
+		List<List<State>> duplicates = new ArrayList<>();
+		List<State> visited = new ArrayList<>();
+
+		for (int i = 0; i < states.size() - 1; i++) {
+			State s1 = states.get(i);
+			if (visited.contains(s1)) continue;
+
+			List<State> duplicate = new ArrayList<>();
+
+			duplicate.add(s1);
+			visited.add(s1);
+
+			for (int j = i + 1; j < states.size(); j++) {
+				State s2 = states.get(j);
+
+				if (visited.contains(s2)) continue;
+
+				if (s1.coreEquals(s2)) {
+					duplicate.add(s2);
+					visited.add(s2);
+				}
+			}
+
+			if (duplicate.size() > 1) duplicates.add(duplicate);
+		}
+
+		return duplicates;
 	}
 
 	public boolean isStateCreated(State state) {
@@ -113,5 +148,9 @@ public class FiniteStateMachine {
 		}
 
 		return false;
+	}
+
+	public void setQuiet(boolean quiet) {
+		this.quiet = quiet;
 	}
 }
