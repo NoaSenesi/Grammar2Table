@@ -61,6 +61,8 @@ public class Grammar2Table {
 			}
 		}
 
+		long start = System.currentTimeMillis();
+
 		String[] read = Reader.getLines(args[0]);
 
 		Tokenizer tokenizer = null;
@@ -97,7 +99,8 @@ public class Grammar2Table {
 
 		if (!quiet) System.out.println("Creating table...");
 		Table table = new Table(fsm);
-		if (compact) table.setCompact();
+		if (quiet) table.setQuiet();
+		if (compact) table.compact();
 
 		if (!quiet) System.out.println("Exporting...");
 
@@ -105,6 +108,9 @@ public class Grammar2Table {
 		table.saveCSV(name + ".csv", optimizeCSVLevel);
 		if (!noTable) table.save(name + ".g2table");
 
-		if (!quiet) System.out.println("Done!");
+		start = System.currentTimeMillis() - start;
+		float secs = (float) start / 1000;
+
+		if (!quiet) System.out.println("Done in " + secs + " second" + (secs >= 2 ? "s" : "") + "!");
 	}
 }

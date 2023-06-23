@@ -15,7 +15,7 @@ public class Table {
 	private FiniteStateMachine fsm;
 	private List<String> tokens;
 	private Action[][] table;
-	private boolean compact = false;
+	private boolean quiet = false;
 
 	public Table(FiniteStateMachine fsm) {
 		this.fsm = fsm;
@@ -57,7 +57,7 @@ public class Table {
 					}
 				} else {
 					ActionType type = fsm.getGrammar().getNonTerminals().contains(token) ? ActionType.GOTO : ActionType.SHIFT;
-					table[i][j] = new Action(type, s.shift(token).getId());
+					table[i][j] = new Action(type, s.shift(token));
 				}
 			}
 		}
@@ -69,8 +69,154 @@ public class Table {
 		return table;
 	}
 
-	public void setCompact() {
-		compact = true;
+	private boolean areLinesConflictual(Action[] line1, Action[] line2, List<List<State>> duplicates) {
+		for (int i = 0; i < line1.length; i++) {
+			Action action1 = line1[i], action2 = line2[i];
+
+			if (action1.getType() == ActionType.ERROR || action2.getType() == ActionType.ERROR) continue;
+			if (action1.getType() == ActionType.ACCEPT || action2.getType() == ActionType.ACCEPT) return true;
+			if (action1.getType() != action2.getType()) return true;
+
+			if (action1.getType() == ActionType.REDUCE && !action1.getRule().coreEquals(action2.getRule())) return true;
+
+			if (action1.getType() == ActionType.SHIFT || action1.getType() == ActionType.GOTO) {
+				for (List<State> duplicate : duplicates) {
+					if (!duplicate.contains(action1.getState()) || !duplicate.contains(action2.getState())) return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public void setQuiet() {
+		quiet = true;
+	}
+
+	private void separateConflicts(List<List<State>> duplicates) {
+		Action[][] table = getTable();
+		List<List<State>> last = new ArrayList<>();
+
+		while (!duplicates.equals(last)) {
+			last = new ArrayList<>(duplicates);
+
+			for (int i = 0; i < duplicates.size(); i++) {
+				List<State> group = duplicates.get(i);
+				List<List<State>> newGroups = new ArrayList<>();
+
+				for (int a = 0; a < group.size() - 1; a++) {
+					boolean aIsConflictual = false;
+
+					for (int b = a + 1; b < group.size(); b++) {
+						if (areLinesConflictual(table[group.get(a).getId()], table[group.get(b).getId()], duplicates)) {
+							aIsConflictual = true;
+							break;
+						}
+					}
+
+					if (!aIsConflictual) continue;
+
+					group.remove(a);
+
+					for (List<State> newGroup : newGroups) {
+						if (!areLinesConflictual(table[a], table[newGroup.get(0).getId()], duplicates)) {
+							newGroup.add(group.get(a));
+							aIsConflictual = false;
+							break;
+						}
+					}
+
+					if (aIsConflictual) {
+						List<State> newGroup = new ArrayList<>();
+						newGroup.add(group.get(a));
+						newGroups.add(newGroup);
+					}
+				}
+
+				if (newGroups.size() > 0) {
+					duplicates.addAll(newGroups);
+				}
+
+				if (group.size() == 1) duplicates.remove(i--);
+			}
+		}
+	}
+
+	private void mergeLines(Action[] line1, Action[] line2) {
+		// Lines are supposedly non-conflictual
+
+		for (int i = 0; i < line1.length; i++) {
+			Action action1 = line1[i], action2 = line2[i];
+
+			if (action1.getType() == ActionType.ERROR) line1[i] = action2;
+		}
+	}
+
+	private void mergeTable(List<List<State>> duplicates) {
+		int count = 0;
+		for (List<State> duplicate : duplicates) count += duplicate.size() - 1;
+
+		Action[][] table = getTable(), newTable = new Action[table.length - count][table[0].length];
+
+		for (int i = 0, newTableIndex = 0; i < table.length; i++) {
+			boolean isDuplicate = false;
+
+			for (List<State> group : duplicates) {
+				for (State s : group) {
+					if (s.getId() == i) {
+						isDuplicate = true;
+						break;
+					}
+				}
+
+				if (isDuplicate && group.get(0).getId() == i) {
+					newTable[newTableIndex] = table[i];
+
+					for (int j = 1; j < group.size(); j++) {
+						mergeLines(newTable[newTableIndex], table[group.get(j).getId()]);
+					}
+
+					newTableIndex++;
+					break;
+				}
+			}
+
+			if (!isDuplicate) newTable[newTableIndex++] = table[i];
+		}
+
+		this.table = newTable;
+
+		if (!quiet) System.out.println(count + " state" + (count > 1 ? "s" : "") + " merged, " + newTable.length + " state" + (newTable.length > 1 ? "s" : "") + " left");
+	}
+
+	private void updateStateCount(List<List<State>> duplicates) {
+		int index = 0;
+
+		for (State s : fsm.getStates()) {
+			boolean inDuplicate = false;
+
+			for (List<State> group : duplicates) {
+				if (group.contains(s)) {
+					inDuplicate = true;
+
+					if (group.get(0).getId() == s.getId()) s.setId(index++);
+					else s.setId(group.get(0).getId());
+
+					break;
+				}
+			}
+
+			if (!inDuplicate) s.setId(index++);
+		}
+	}
+
+	public void compact() {
+		if (!quiet) System.out.println("Compacting table...");
+
+		List<List<State>> duplicates = fsm.findDuplicates();
+		separateConflicts(duplicates);
+		mergeTable(duplicates);
+		updateStateCount(duplicates);
 	}
 
 	public void print() {
@@ -285,118 +431,4 @@ public class Table {
 			e.printStackTrace();
 		}
 	}
-
-
-
-/*
-	public void save(String filename) {
-		File file = new File(filename);
-		if (file.exists()) file.delete();
-
-		try {
-			file.createNewFile();
-			FileWriter writer = new FileWriter(file);
-
-			int[] width = new int[fsm.getGrammar().getTerminals().size() + fsm.getGrammar().getNonTerminals().size() + 1];
-
-			for (Action[] line : getTable()) {
-				for (int i = 0; i < line.length; i++) {
-					if (line[i].toString().length() > width[i+1]) width[i+1] = line[i].toString().length();
-				}
-
-				for (State s : fsm.getStates()) {
-					if (("I" + s.getId()).length() > width[0]) width[0] = ("I" + s.getId()).length();
-				}
-
-				if ("State".length() > width[0]) width[0] = "State".length();
-			}
-
-			writer.write("┌");
-			for (int i = 0; i < width.length; i++) {
-				for (int j = 0; j < width[i] + 2; j++) writer.write("─");
-				if (i != width.length - 1) writer.write("┬");
-				if (i == fsm.getGrammar().getTerminals().size() || i == 0) writer.write("┬");
-			}
-			writer.write("┐\n");
-
-			writer.write("│ State ");
-			for (int i = 0; i < width[0] - 5; i++) writer.write(" ");
-
-			writer.write("││");
-			for (int i = 0; i < fsm.getGrammar().getTerminals().size(); i++) {
-				writer.write(" " + fsm.getGrammar().getTerminals().get(i) + " ");
-				for (int j = 0; j < width[i+1] - 1; j++) writer.write(" ");
-				writer.write("│");
-			}
-			writer.write("│");
-			for (int i = 0; i < fsm.getGrammar().getNonTerminals().size(); i++) {
-				writer.write(" " + fsm.getGrammar().getNonTerminals().get(i) + " ");
-				for (int j = 0; j < width[i + fsm.getGrammar().getTerminals().size() + 1] - 1; j++) writer.write(" ");
-				writer.write("│");
-			}
-			writer.write("\n");
-
-			writer.write("├");
-			for (int i = 0; i < width.length; i++) {
-				for (int j = 0; j < width[i] + 2; j++) writer.write("─");
-				if (i != width.length - 1) writer.write("┼");
-				if (i == fsm.getGrammar().getTerminals().size() || i == 0) writer.write("┼");
-			}
-			writer.write("┤\n");
-
-			for (int i = 0; i < getTable().length; i++) {
-				String in = "I" + i;
-				writer.write("│ " + in + " ");
-				for (int j = 0; j < width[0] - in.length(); j++) writer.write(" ");
-
-				writer.write("││");
-				for (int j = 0; j < getTable()[i].length; j++) {
-					writer.write(" " + getTable()[i][j] + " ");
-					for (int k = 0; k < width[j+1] - getTable()[i][j].toString().length(); k++) writer.write(" ");
-					writer.write("│");
-					if (j == fsm.getGrammar().getTerminals().size() - 1) writer.write("│");
-				}
-				writer.write("\n");
-			}
-
-			writer.write("└");
-			for (int i = 0; i < width.length; i++) {
-				for (int j = 0; j < width[i] + 2; j++) writer.write("─");
-				if (i != width.length - 1) writer.write("┴");
-				if (i == fsm.getGrammar().getTerminals().size() || i == 0) writer.write("┴");
-			}
-			writer.write("┘\n");
-
-			writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void saveCSV(String filename) {
-		File file = new File(filename);
-		if (file.exists()) file.delete();
-
-		try {
-			file.createNewFile();
-			FileWriter writer = new FileWriter(file);
-
-			writer.write("State");
-			for (int i = 0; i < fsm.getGrammar().getTerminals().size(); i++) writer.write("," + fsm.getGrammar().getTerminals().get(i));
-			for (int i = 0; i < fsm.getGrammar().getNonTerminals().size(); i++) writer.write("," + fsm.getGrammar().getNonTerminals().get(i));
-			writer.write("\n");
-
-			for (int i = 0; i < getTable().length; i++) {
-				String in = "I" + i;
-				writer.write(in);
-				for (int j = 0; j < getTable()[i].length; j++) writer.write("," + getTable()[i][j]);
-				writer.write("\n");
-			}
-
-			writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-*/
 }
