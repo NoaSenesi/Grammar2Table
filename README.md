@@ -43,3 +43,9 @@ S = a NonTerm b | c;
 NonTerm = d NonTerm | e \= a OtherNonTerm;
 OtherNonTerm = f NonTerm + e | ^;
 ```
+
+***
+
+<div style="text-align:center">
+	<img src="resources/logo.png" width="200">
+</div>
