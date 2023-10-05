@@ -19,6 +19,7 @@ Empty words (epsilon) are written as `^`
 - `-n, --no-table`: Prevents the table from exporting
 - `-q, --quiet`: Quiet mode, only show errors
 - `-c, --compact`: Merge states to remove doubles when no ambiguity
+- `-o<name>, --output=name`: Output file name (default: `<file>`)
 - `-p[N], --optimize-csv[=N]`: Optimize CSV file with level N (default: 1)
 
 #### Optimize CSV

@@ -23,21 +23,21 @@ public class Grammar2Table {
 			System.out.println("Grammar2Table v" + VERSION);
 			System.out.println("Usage: g2t <file> [options]");
 			System.out.println("Options:");
-			System.out.println("  -s,     --show-states         Show all states of the finite state machine");
-			System.out.println("  -n,     --no-table            Prevents the table from exporting");
-			System.out.println("  -q,     --quiet               Quiet mode, only show errors");
-			System.out.println("  -c,     --compact             Merge states to remove doubles when no ambiguity");
-			System.out.println("  -oname, --output=name         Output file name (default: <file>)");
-			System.out.println("  -p[N],  --optimize-csv[=N]    Optimize CSV file with level N (default: 1)");
-			System.out.println("                                0: no optimization");
-			System.out.println("                                1: remove ERROR actions");
-			System.out.println("                                2: remove leading commas and state number");
-			System.out.println("                                3: replace action type by a single character,");
-			System.out.println("                                   replace arrow by equals and removes \"I\" in states");
-			System.out.println("                                4: Replace REDUCE action rules by the non-terminal to");
-			System.out.println("                                   reduce to and the number of stack pop to do");
-			System.out.println("                                5: Remove first space after the first letter");
-			System.out.println("                                   and replace non-terminals by their index at the top");
+			System.out.println("  -s,       --show-states         Show all states of the finite state machine");
+			System.out.println("  -n,       --no-table            Prevents the table from exporting");
+			System.out.println("  -q,       --quiet               Quiet mode, only show errors");
+			System.out.println("  -c,       --compact             Merge states to remove doubles when no ambiguity");
+			System.out.println("  -o<name>, --output=name         Output file name (default: <file>)");
+			System.out.println("  -p[N],    --optimize-csv[=N]    Optimize CSV file with level N (default: 1)");
+			System.out.println("                                  0: no optimization");
+			System.out.println("                                  1: remove ERROR actions");
+			System.out.println("                                  2: remove leading commas and state number");
+			System.out.println("                                  3: replace action type by a single character,");
+			System.out.println("                                     replace arrow by equals and removes \"I\" in states");
+			System.out.println("                                  4: Replace REDUCE action rules by the non-terminal to");
+			System.out.println("                                     reduce to and the number of stack pop to do");
+			System.out.println("                                  5: Remove first space after the first letter");
+			System.out.println("                                     and replace non-terminals by their index at the top");
 			System.exit(0);
 		}
 
