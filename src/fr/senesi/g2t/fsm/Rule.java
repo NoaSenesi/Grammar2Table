@@ -95,6 +95,16 @@ public class Rule {
 		return left + " -> " + r;
 	}
 
+	@Override
+	public int hashCode() {
+		int code = left.hashCode() * cursor;
+		for (String s : right) code += s.hashCode();
+		for (String s : context) code += s.hashCode();
+
+		return code * right.size() * context.size();
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof Rule)) return false;
 

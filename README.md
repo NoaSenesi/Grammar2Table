@@ -46,6 +46,4 @@ OtherNonTerm = f NonTerm + e | ^;
 
 ***
 
-<div style="text-align:center">
-	<img src="resources/logo.png" width="200">
-</div>
+<img src="resources/logo.png" width="200">

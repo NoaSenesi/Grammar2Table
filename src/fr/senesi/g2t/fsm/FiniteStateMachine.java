@@ -1,6 +1,7 @@
 package fr.senesi.g2t.fsm;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import fr.senesi.g2t.grammar.Grammar;
@@ -8,14 +9,14 @@ import fr.senesi.g2t.tokenizer.Token;
 
 public class FiniteStateMachine {
 	private Grammar grammar;
-	private List<State> states;
+	private LinkedHashSet<State> states;
 	private boolean quiet = false;
 
 	public FiniteStateMachine(Grammar g) {
 		grammar = g.copy();
 		grammar.augment();
 
-		states = new ArrayList<>();
+		states = new LinkedHashSet<>();
 	}
 
 	public Grammar getGrammar() {
@@ -23,11 +24,11 @@ public class FiniteStateMachine {
 	}
 
 	public List<State> getStates() {
-		return states;
+		return new ArrayList<>(states);
 	}
 
 	public State getInitialState() {
-		if (states.size() >= 1) return states.get(0);
+		if (states.size() >= 1) return getStates().get(0);
 
 		List<Rule> rules = new ArrayList<>();
 		List<String> right = new ArrayList<>();
@@ -96,14 +97,14 @@ public class FiniteStateMachine {
 		for (int i = 0; i < states.size(); i++) {
 			if (!quiet) System.out.print("Creating state " + i + "...\r");
 
-			if (i != 0) state = states.get(i);
+			if (i != 0) state = getStates().get(i);
 
 			for (String token : tokens) {
 				State newState = state.shift(token);
 
 				if (newState == null) continue;
 
-				if (!isStateCreated(newState)) states.add(newState);
+				if (!states.contains(newState)) states.add(newState);
 			}
 		}
 
@@ -117,7 +118,7 @@ public class FiniteStateMachine {
 		List<State> visited = new ArrayList<>();
 
 		for (int i = 0; i < states.size() - 1; i++) {
-			State s1 = states.get(i);
+			State s1 = getStates().get(i);
 			if (visited.contains(s1)) continue;
 
 			List<State> duplicate = new ArrayList<>();
@@ -126,7 +127,7 @@ public class FiniteStateMachine {
 			visited.add(s1);
 
 			for (int j = i + 1; j < states.size(); j++) {
-				State s2 = states.get(j);
+				State s2 = getStates().get(j);
 
 				if (visited.contains(s2)) continue;
 
@@ -140,14 +141,6 @@ public class FiniteStateMachine {
 		}
 
 		return duplicates;
-	}
-
-	public boolean isStateCreated(State state) {
-		for (State s : states) {
-			if (s.equals(state)) return true;
-		}
-
-		return false;
 	}
 
 	public void setQuiet(boolean quiet) {

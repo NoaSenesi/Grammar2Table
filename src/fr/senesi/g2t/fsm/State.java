@@ -89,6 +89,16 @@ public class State {
 		return state;
 	}
 
+	@Override
+	public int hashCode() {
+		int code = 0;
+
+		for (Rule r : rules) code += r.hashCode();
+
+		return code * rules.size();
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof State)) return false;
 
