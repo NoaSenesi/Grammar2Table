@@ -1,5 +1,7 @@
 package fr.senesi.g2t;
 
+import java.io.File;
+
 import fr.senesi.g2t.exception.SyntaxException;
 import fr.senesi.g2t.exception.TokenizationException;
 import fr.senesi.g2t.fsm.FiniteStateMachine;
@@ -10,7 +12,7 @@ import fr.senesi.g2t.table.Table;
 import fr.senesi.g2t.tokenizer.Tokenizer;
 
 public class Grammar2Table {
-	public static final String VERSION = "3.0.0";
+	public static final String VERSION = "3.0.1";
 
 	public static void main(String[] args) {
 		if (args.length == 0) {
@@ -25,6 +27,7 @@ public class Grammar2Table {
 			System.out.println("  -n,     --no-table            Prevents the table from exporting");
 			System.out.println("  -q,     --quiet               Quiet mode, only show errors");
 			System.out.println("  -c,     --compact             Merge states to remove doubles when no ambiguity");
+			System.out.println("  -oname, --output=name         Output file name (default: <file>)");
 			System.out.println("  -p[N],  --optimize-csv[=N]    Optimize CSV file with level N (default: 1)");
 			System.out.println("                                0: no optimization");
 			System.out.println("                                1: remove ERROR actions");
@@ -40,12 +43,40 @@ public class Grammar2Table {
 
 		boolean showStates = false, noTable = false, quiet = false, compact = false;
 		int optimizeCSVLevel = 0;
+		String output = args[0].substring(0, args[0].lastIndexOf('.'));
 
 		for (int i = 1; i < args.length; i++) {
 			if (args[i].equals("--show-states") || args[i].equals("-s")) showStates = true;
 			else if (args[i].equals("--no-table") || args[i].equals("-n")) noTable = true;
 			else if (args[i].equals("--quiet") || args[i].equals("-q")) quiet = true;
 			else if (args[i].equals("--compact") || args[i].equals("-c")) compact = true;
+
+			else if (args[i].equals("--output")) System.err.println("Warning: no output file name specified, skipping option");
+			else if (args[i].startsWith("--output=") || args[i].startsWith("-o")) {
+				String name = args[i].startsWith("--output=") ? args[i].substring(9) : args[i].substring(2);
+
+				if (name.length() == 0) {
+					System.err.println("Warning: no output file name specified, using default value (" + output + ")");
+					continue;
+				}
+
+				if (!name.matches("(\\.?\\.\\/)*([A-Za-z0-9\\-_\\.]+\\/)*([A-Za-z0-9\\-_\\.]+)")) {
+					System.err.println("Warning: output file name must only contain letters, numbers, hyphens, underscores and periods, using default value (" + output + ")");
+					continue;
+				}
+
+				if (name.contains("/")) {
+					String folder = name.substring(0, name.lastIndexOf('/'));
+					File f = new File(folder);
+
+					if (!f.exists()) {
+						System.err.println("Warning: output folder does not exist, using default value (" + output + ")");
+						continue;
+					}
+				}
+
+				output = name;
+			}
 
 			else if (args[i].equals("--optimize-csv") || args[i].equals("-p")) optimizeCSVLevel = 1;
 			else if (args[i].startsWith("--optimize-csv=") || args[i].startsWith("-p")) {
@@ -104,9 +135,8 @@ public class Grammar2Table {
 
 		if (!quiet) System.out.println("Exporting...");
 
-		String name = args[0].substring(0, args[0].lastIndexOf('.'));
-		table.saveCSV(name + ".csv", optimizeCSVLevel);
-		if (!noTable) table.save(name + ".g2table");
+		table.saveCSV(output + ".csv", optimizeCSVLevel);
+		if (!noTable) table.save(output + ".g2table");
 
 		start = System.currentTimeMillis() - start;
 		float secs = (float) start / 1000;
