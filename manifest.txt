@@ -1,0 +1,2 @@
+Main-Class: fr.senesi.g2t.Grammar2Table
+

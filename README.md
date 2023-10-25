@@ -6,8 +6,11 @@ Java program that takes a grammar as an input and gives a table as an output.
 
 You will need Java to be installed in order to use the program.
 
-To run this program on a grammar file, you first need to compile it with `build` for Windows or `./build` for Linux.
+To run this program on a grammar file, you first need to compile it with `compile` for Windows or `./compile` for Linux.
 Then you can use the command `g2t <file> [options]` for Windows or `./g2t <file> [options]` for Linux.
+You can generate a jar file using `build` for Windows or  `./build` for Linux.
+For Linux only, you can also generate a .deb package file using `./mkpkg`.
+*Note that you may need to use `sudo` to execute the commands.*
 
 Terminals and non-terminals are automatically determined. They can be any symbol apart from the end of file symbol `$`
 Non-alphanumerical symbols are automatically determined to be terminals, and they are always separated.

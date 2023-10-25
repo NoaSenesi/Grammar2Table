@@ -1,18 +1,12 @@
 #!/bin/sh
 
-echo "Building G2T..."
+echo "Compiling G2T..."
 find -name "*.java" > sources.txt
 
 if javac -d ./bin @sources.txt;
 then
 	rm sources.txt
-
-	if jar cfm g2t.jar manifest.txt -C bin .;
-	then
-		echo "Done!"
-	else
-		echo "Error!"
-	fi
+	echo "Done!"
 else
 	rm sources.txt
 	echo "Error!"

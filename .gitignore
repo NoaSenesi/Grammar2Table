@@ -3,5 +3,8 @@ bin/
 test/
 package/
 
+*.jar
 *.g2table
 *.csv
+*.deb
+
