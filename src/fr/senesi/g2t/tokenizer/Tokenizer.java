@@ -60,6 +60,8 @@ public class Tokenizer {
 				}
 			}
 
+            if (cursor >= stream.length()) break;
+
 			c = stream.charAt(cursor);
 
 			if (c == '\n') {
