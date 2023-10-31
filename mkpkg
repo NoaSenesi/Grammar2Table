@@ -16,7 +16,7 @@ echo "#!/bin/sh" >> package/usr/local/bin/g2t
 echo java -jar /usr/local/bin/g2t.jar \$@ >> package/usr/local/bin/g2t
 
 echo Package: g2t >> package/DEBIAN/control
-echo Version: 3.0.3 >> package/DEBIAN/control
+echo Version: 3.1.0 >> package/DEBIAN/control
 echo Maintainer: Noa Senesi >> package/DEBIAN/control
 echo Architecture: all >> package/DEBIAN/control
 echo Description: Grammar2Table >> package/DEBIAN/control

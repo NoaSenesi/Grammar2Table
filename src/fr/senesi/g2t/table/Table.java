@@ -97,6 +97,8 @@ public class Table {
 		Action[][] table = getTable();
 		List<List<State>> last = new ArrayList<>();
 
+        float compactingRatio = 1;
+
 		while (!duplicates.equals(last)) {
 			last = new ArrayList<>(duplicates);
 
@@ -139,8 +141,18 @@ public class Table {
 
 				if (group.size() == 1) duplicates.remove(i--);
 			}
+        
+            if (quiet) continue;
+        
+            int duplicateCount = -duplicates.size();
+            for (List<State> duplicate : duplicates) duplicateCount += duplicate.size();
+            compactingRatio = (float) fsm.getStates().size() / (float) (fsm.getStates().size() - duplicateCount);
+
+            System.out.print("Current compacting ratio: " + String.format("%.2f", compactingRatio) + "\r");
 		}
-	}
+
+        if (!quiet) System.out.println("Final compacting ratio: " + String.format("%.2f", compactingRatio) + "          ");
+    }
 
 	private void mergeLines(Action[] line1, Action[] line2) {
 		// Lines are supposedly non-conflictual
@@ -217,73 +229,6 @@ public class Table {
 		separateConflicts(duplicates);
 		mergeTable(duplicates);
 		updateStateCount(duplicates);
-	}
-
-	public void print() {
-		int[] width = new int[tokens.size() + 1];
-		width[0] = 5;
-
-		for (int i = 1; i < width.length; i++) {
-			if (tokens.get(i-1).length() > width[i]) width[i] = tokens.get(i-1).length();
-		}
-
-		for (Action[] line : getTable()) {
-			for (int i = 0; i < line.length; i++) {
-				if (line[i].toString().length() > width[i+1]) width[i+1] = line[i].toString().length();
-			}
-
-			for (State s : fsm.getStates()) {
-				if (("I" + s.getId()).length() > width[0]) width[0] = ("I" + s.getId()).length();
-			}
-		}
-
-		System.out.print("┌");
-		for (int i = 0; i < width.length; i++) {
-			for (int j = 0; j < width[i] + 2; j++) System.out.print("─");
-			if (i != width.length - 1) System.out.print("┬");
-			if (i == fsm.getGrammar().getTerminals().size() + 1 || i == 0) System.out.print("┬");
-		}
-		System.out.println("┐");
-
-		System.out.print("│ State ");
-		for (int i = 0; i < width[0] - 5; i++) System.out.print(" ");
-		System.out.print("│");
-		for (int i = 1; i < width.length; i++) {
-			System.out.print("│ ");
-			System.out.print(tokens.get(i-1));
-			for (int j = 0; j < width[i] - tokens.get(i-1).length() + 1; j++) System.out.print(" ");
-			if (i == fsm.getGrammar().getTerminals().size() + 1) System.out.print("│");
-		}
-		System.out.println("│");
-
-		System.out.print("├");
-		for (int i = 0; i < width.length; i++) {
-			for (int j = 0; j < width[i] + 2; j++) System.out.print("─");
-			if (i != width.length - 1) System.out.print("┼");
-			if (i == fsm.getGrammar().getTerminals().size() + 1 || i == 0) System.out.print("┼");
-		}
-		System.out.println("┤");
-
-		for (int i = 0; i < getTable().length; i++) {
-			System.out.print("│ I" + i + " ");
-			for (int j = 0; j < width[0] - ("I" + i).length(); j++) System.out.print(" ");
-			System.out.print("│");
-			for (int j = 0; j < getTable()[i].length; j++) {
-				System.out.print("│ ");
-				System.out.print(getTable()[i][j]);
-				for (int k = 0; k < width[j+1] - getTable()[i][j].toString().length() + 1; k++) System.out.print(" ");
-				if (j == fsm.getGrammar().getTerminals().size()) System.out.print("│");
-			}
-			System.out.println("│");
-		}
-
-		System.out.print("└");
-		for (int i = 0; i < width.length; i++) {
-			for (int j = 0; j < width[i] + 2; j++) System.out.print("─");
-			if (i != width.length - 1) System.out.print("┴");
-			if (i == fsm.getGrammar().getTerminals().size() + 1 || i == 0) System.out.print("┴");
-		}
-		System.out.println("┘");
 	}
 
 	public void save(String filename) {

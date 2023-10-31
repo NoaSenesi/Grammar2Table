@@ -104,6 +104,13 @@ public class Rule {
 		return code * right.size() * context.size();
 	}
 
+	public int coreHashCode() {
+		int code = left.hashCode() * cursor;
+		for (String s : right) code += s.hashCode();
+
+		return code * right.size();
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof Rule)) return false;

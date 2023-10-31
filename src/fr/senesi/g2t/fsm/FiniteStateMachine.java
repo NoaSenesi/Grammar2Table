@@ -1,6 +1,7 @@
 package fr.senesi.g2t.fsm;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -115,30 +116,35 @@ public class FiniteStateMachine {
 
 	public List<List<State>> findDuplicates() {
 		List<List<State>> duplicates = new ArrayList<>();
-		List<State> visited = new ArrayList<>();
+		
+        List<State> sortedStates = new ArrayList<>(states);
 
-		for (int i = 0; i < states.size() - 1; i++) {
-			State s1 = getStates().get(i);
-			if (visited.contains(s1)) continue;
+        Collections.sort(sortedStates, (s1, s2) -> {
+            if (s1.coreEquals(s2)) return 0;
 
-			List<State> duplicate = new ArrayList<>();
+            return s1.coreHashCode() < s2.coreHashCode() ? -1 : 1;
+        });
 
-			duplicate.add(s1);
-			visited.add(s1);
+        for (int i = 1, start = 0; i < states.size(); i++) {
+            while (sortedStates.get(start).coreEquals(sortedStates.get(i))) {
+                i++;
 
-			for (int j = i + 1; j < states.size(); j++) {
-				State s2 = getStates().get(j);
+                if (i >= states.size()) {
+                    //i = states.size() - 1;
+                    break;
+                }
+            }
 
-				if (visited.contains(s2)) continue;
+            if (i - start <= 1) {
+                start = i;
+                continue;
+            }
 
-				if (s1.coreEquals(s2)) {
-					duplicate.add(s2);
-					visited.add(s2);
-				}
-			}
+            List<State> group = new ArrayList<>();
+            while (start < i) group.add(sortedStates.get(start++));
 
-			if (duplicate.size() > 1) duplicates.add(duplicate);
-		}
+            duplicates.add(group);
+        }
 
 		return duplicates;
 	}

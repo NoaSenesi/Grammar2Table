@@ -98,6 +98,14 @@ public class State {
 		return code * rules.size();
 	}
 
+    public int coreHashCode() {
+        int code = 0;
+        
+        for (Rule r : rules) code += r.coreHashCode();
+
+        return code * rules.size();
+    }
+
 	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof State)) return false;
